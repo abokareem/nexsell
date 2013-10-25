@@ -4,6 +4,11 @@ use Guzzle\Http\Client;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
+use Ddedic\Nexsell\Clients;
+use Ddedic\Nexsell\Clients\Repositories\ClientEloquentRepo as ClientProvider;
+
+
+
 use Teepluss\Api\Api;
 
 class NexsellServiceProvider extends ServiceProvider {
@@ -48,7 +53,7 @@ class NexsellServiceProvider extends ServiceProvider {
 		$this->app['nexsell'] = $this->app->share(function($app)
 		{
 			//return $this->app->make('api')->createResponse($app['config']['nexsell::api']);
-		  	return new Nexsell($app['config']);
+		  	return new Nexsell($app['config'], new ClientProvider);
 		});
 
 

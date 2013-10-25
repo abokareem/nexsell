@@ -1,10 +1,10 @@
 <?php namespace Ddedic\Nexsell;
 
 use Illuminate\Config\Repository;
-use App;
+use Ddedic\Nexsell\Clients\ClientInterface;
 
+use Teepluss\Api\Facades\Api;
 
-use Teepluss\Api\Api;
 
 
 class Nexsell {
@@ -12,10 +12,15 @@ class Nexsell {
 
 	protected $config;
 
+	protected $clients;
 
-	public function __construct(Repository $config)
+
+	public function __construct(Repository $config, ClientInterface $clients)
 	{
+		//dd($client);
+
 		$this->config = $config;
+		$this->clients = $clients;
 	}
 
 
@@ -33,9 +38,36 @@ class Nexsell {
 		return $this->config->get('nexsell::api');
 	}
 
-	public function fire()
+	public function fire($client_id)
 	{
-		return App::make('api')->createResponse('Fakat fire!');
+		//return X::createResponse('Fakat fire!');
+
+		$client = $this->clients->findById($client_id);
+
+		if($client)
+		{
+			$output = $client->getPlan()->get();
+
+		} else {
+
+			$output = array('error' => 'Client not found');
+		}
+
+
+		
+		return API::createResponse($output);
 	}
+
+
+	public function nexsell_send_msg()
+	{
+
+		
+		
+	}
+
+
+
+
 
 }
