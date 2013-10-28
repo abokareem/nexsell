@@ -9,9 +9,11 @@ class PlanEloquentRepo extends Eloquent implements PlanInterface {
 
 	protected $table = 'plans';
 	public $timestamps = true;
-	protected $softDelete = true;
-	protected $fillable = array('name', 'description');
+	protected $fillable = array();
 	protected $visible = array();
+
+
+
 
 	public function pricing()
 	{
@@ -27,7 +29,31 @@ class PlanEloquentRepo extends Eloquent implements PlanInterface {
 
 	public function getName()
 	{
-		return $this->getName();
+		return $this->name;
+	}
+
+	public function getDescription()
+	{
+		return $this->description;
+	}	
+
+	public function getPriceAdjustment()
+	{
+		return $this->price_adjustment;
+	}
+
+	public function isStrict()
+	{
+		if ($this->strict == '1')
+			return true;
+		else
+			return false;
+	}
+
+	
+	public function findById($id)
+	{
+		return $this->find($id);
 	}
 
 }

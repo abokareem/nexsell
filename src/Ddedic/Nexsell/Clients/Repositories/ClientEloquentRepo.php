@@ -74,12 +74,12 @@ class ClientEloquentRepo extends Eloquent implements ClientInterface {
 
 	public function getPlan()
 	{
-		return $this->plan()->first();
+		return $this->plan();
 	}
 
 	public function getGateway()
 	{
-		return $this->gateway()->first();
+		return $this->gateway();
 	}
 
 

@@ -7,5 +7,13 @@ interface PlanInterface {
 
 	public function getName();
 
+	public function getDescription();
+
+	public function getPriceAdjustment();
+
+	public function isStrict();
+
+	public function findById($id);
+
 
 }
