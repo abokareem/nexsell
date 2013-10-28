@@ -38,6 +38,16 @@ class ClientEloquentRepo extends Eloquent implements ClientInterface {
 	}
 
 
+	public function isActive()
+	{
+		return $this->active;
+	}
+
+	public function findByApiCredentials($api_key, $api_secret)
+	{
+        return $this->where('api_key', $api_key)->where('api_secret', $api_secret)->first();
+	}
+
 
 	public function findById($id)
 	{
@@ -62,7 +72,7 @@ class ClientEloquentRepo extends Eloquent implements ClientInterface {
 
 	public function getPlan()
 	{
-		return $this->plan();
+		return $this->plan()->first();
 	}
 
 

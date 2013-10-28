@@ -3,8 +3,7 @@
 use Illuminate\Config\Repository;
 use Ddedic\Nexsell\Clients\ClientInterface;
 
-use Teepluss\Api\Facades\Api;
-
+use API;
 
 
 class Nexsell {
@@ -30,7 +29,7 @@ class Nexsell {
 
 	public static function hello()
 	{
-		return 'Nexell says hello!';
+		echo 'Nexell says hello!';
 	}
 
 	public function config()
@@ -56,15 +55,44 @@ class Nexsell {
 
 		
 		return API::createResponse($output);
+		//return API::createResponse($this->clients->getAll())
 	}
 
 
-	public function nexsell_send_msg()
+
+
+
+	// ------------------------
+
+
+
+	public function authApi($api_key, $api_secret)
 	{
+		$client = $this->clients->findByApiCredentials($api_key, $api_secret);
 
+		if ( $client !== NULL)
+		{
+			if ($client->isActive()) return $client;	
+		}
 		
-		
+		return false;
 	}
+
+
+
+	public function sendMessage(ClientInterface $client, MessageInterface $message, GatewayInterface $gateway)
+	{
+		
+		$message = new Message('sender-name', 'receiver-phone-number', 'message text');
+
+		$gateway = new NexmoGateway('username', 'password');
+		$gateway->send($message);
+
+		echo 'Account Balance is: ', $gateway->getBalance();
+		
+
+	}
+
 
 
 

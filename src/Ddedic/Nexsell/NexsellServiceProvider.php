@@ -7,9 +7,9 @@ use Illuminate\Support\ServiceProvider;
 use Ddedic\Nexsell\Clients;
 use Ddedic\Nexsell\Clients\Repositories\ClientEloquentRepo as ClientProvider;
 
-
-
 use Teepluss\Api\Api;
+
+
 
 class NexsellServiceProvider extends ServiceProvider {
 
@@ -27,11 +27,30 @@ class NexsellServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
+		
+		$loader = \Illuminate\Foundation\AliasLoader::getInstance();
+
+
+		// Nexsell
+		$loader->alias('Nexsell', 'Ddedic\Nexsell\Facades\NexsellFacade');
 		$this->package('ddedic/nexsell', 'nexsell');
 
+		// API
+		$loader->alias('API', 'Teepluss\Api\Facades\Api');
+		$this->package('teepluss/api', 'api');
 
-		$loader = \Illuminate\Foundation\AliasLoader::getInstance();
-		$loader->alias('Nexsell', 'Ddedic\Nexsell\Facades\NexsellFacade');
+
+
+
+        // Inclusions
+        require __DIR__.'/../../filters.php';
+        require __DIR__.'/../../routes.php';
+
+
+
+
+		
+		
 
 	}
 
@@ -40,12 +59,12 @@ class NexsellServiceProvider extends ServiceProvider {
 	 *
 	 * @return void
 	 */
+	
 	public function register()
 	{
 		$this->app['api'] = $this->app->share(function($app)
 		{
 			$remoteClient = new Client();
-
 			return new Api($app['config'], $app['router'], $app['request'], $remoteClient);
 		});
 
@@ -57,8 +76,8 @@ class NexsellServiceProvider extends ServiceProvider {
 		});
 
 
-
 	}
+	
 
 	/**
 	 * Get the services provided by the provider.
@@ -67,7 +86,7 @@ class NexsellServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array('nexsell');
+		return array('nexsell', 'nexsell.api');
 	}
 
 }

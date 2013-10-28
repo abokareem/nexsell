@@ -6,6 +6,12 @@ interface ClientInterface {
 	public function getAll();
 
 
+
+
+	public function isActive();
+
+	public function findByApiCredentials($api_key, $api_secret);
+
 	public function findById($id);
 
 	public function getApiKey();
@@ -15,10 +21,6 @@ interface ClientInterface {
 	public function getCreditBalance();
 
 	public function getPlan();
-
-
-
-
 
 
 

@@ -18,12 +18,12 @@ class SentryUserSeeder extends Seeder {
         DB::table('clients')->delete();
 
         $user = array(
-            'first_name'   => 'CMS',
-            'last_name'    => 'Admin',
-            'email'        => 'admin@dsmg.co.uk',
-            'password'     => 'password',
-            'activated'    => 1,
-            'activated_at' => new DateTime
+            'api_key'           => 'CMS',
+            'api_secret'        => 'Admin',
+            'minute_limit'      => 'admin@dsmg.co.uk',
+            'hour_limit'        => 'password',
+            'plan_id'           => 1,
+            'credit_balance'    => new DateTime
         );
         Sentry::getUserProvider()->create($user);
 
