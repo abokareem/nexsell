@@ -66,7 +66,8 @@ class MessageController extends BaseApiController {
 	{
 
 
-		return API::createResponse($this->client->toArray());
+		
+		return API::createResponse($this->client->getGateway()->toArray());
 
 		
 	}

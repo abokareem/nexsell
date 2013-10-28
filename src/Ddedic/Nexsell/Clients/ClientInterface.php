@@ -22,6 +22,8 @@ interface ClientInterface {
 
 	public function getPlan();
 
+	public function getGateway();
+
 
 
 }

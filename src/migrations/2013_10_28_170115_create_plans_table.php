@@ -10,7 +10,6 @@ class CreatePlansTable extends Migration {
 		Schema::create('plans', function(Blueprint $table) {
 			$table->increments('id');
 			$table->timestamps();
-			$table->softDeletes();
 			$table->string('name', 255);
 			$table->text('description')->nullable();
 			$table->float('price_adjustment', 8,5)->default('25');

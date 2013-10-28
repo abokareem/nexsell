@@ -41,15 +41,14 @@ class NexsellServiceProvider extends ServiceProvider {
 
 
 
+		$this->bootCommands();
+
+
+
 
         // Inclusions
         require __DIR__.'/../../filters.php';
         require __DIR__.'/../../routes.php';
-
-
-
-
-		
 		
 
 	}
@@ -77,6 +76,32 @@ class NexsellServiceProvider extends ServiceProvider {
 
 
 	}
+
+
+
+
+
+   public function bootCommands()
+    {
+        // Add install command to IoC
+        $this->app['nexsell.commands.install'] = $this->app->share(function($app) {
+                return new Commands\InstallCommand;
+        });
+
+        
+        // Add refresh command to IoC
+        $this->app['nexsell.commands.reinstall'] = $this->app->share(function($app) {
+                return new Commands\ReinstallCommand;
+        });
+
+
+        // Now register all the commands
+        $this->commands('nexsell.commands.install', 'nexsell.commands.reinstall');
+    }
+
+
+
+
 	
 
 	/**

@@ -1,13 +1,10 @@
 <?php namespace Ddedic\Nexsell\Seeds;
 
 
-
-use DateTime;
-
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class SentryUserSeeder extends Seeder {
+class ClientsSeeder extends Seeder {
 
     /**
      * Run the database seeding.
@@ -15,17 +12,37 @@ class SentryUserSeeder extends Seeder {
      * @return void
      */
     public function run() {
-        DB::table('clients')->delete();
 
-        $user = array(
-            'api_key'           => 'CMS',
-            'api_secret'        => 'Admin',
-            'minute_limit'      => 'admin@dsmg.co.uk',
-            'hour_limit'        => 'password',
-            'plan_id'           => 1,
-            'credit_balance'    => new DateTime
-        );
-        Sentry::getUserProvider()->create($user);
+        $clients = [
+            [
+                'api_key'           => '12345',
+                'api_secret'        => '54321',
+                'minute_limit'      => '30',
+                'hour_limit'        => '1000',
+                'plan_id'           => 1,
+                'gateway_id'        => 1,
+                'credit_balance'    => 10.00000,
+                'active'            => 1,
+                'created_at'    => date('Y-m-d H:i:s'),
+                'updated_at'    => date('Y-m-d H:i:s')
+            ],
+
+            [
+                'api_key'           => '56789',
+                'api_secret'        => '98765',
+                'minute_limit'      => '20',
+                'hour_limit'        => '500',
+                'plan_id'           => 1,
+                'gateway_id'        => 1,
+                'credit_balance'    => 0.00000,
+                'active'            => 0,
+                'created_at'    => date('Y-m-d H:i:s'),
+                'updated_at'    => date('Y-m-d H:i:s')
+            ]
+        ];
+        DB::table('clients')->insert($clients);
+        $this->command->info('Clients Table Seeded');
+
 
 
     }

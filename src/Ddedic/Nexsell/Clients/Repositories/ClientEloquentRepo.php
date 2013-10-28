@@ -1,7 +1,6 @@
 <?php namespace Ddedic\Nexsell\Clients\Repositories;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
-
 use Ddedic\Nexsell\Clients\ClientInterface;
 
 
@@ -23,7 +22,10 @@ class ClientEloquentRepo extends Eloquent implements ClientInterface {
 		return $this->hasOne('Ddedic\Nexsell\Plans\Repositories\PlanEloquentRepo', 'id');
 	}
 
-
+	public function gateway()
+	{
+		return $this->hasOne('Ddedic\Nexsell\Gateways\Repositories\GatewayEloquentRepo', 'id');
+	}
 
 
 
@@ -62,7 +64,7 @@ class ClientEloquentRepo extends Eloquent implements ClientInterface {
 
 	public function getApiSecret()
 	{
-		return $this->api_key;
+		return $this->api_secret;
 	}	
 
 	public function getCreditBalance()
@@ -73,6 +75,11 @@ class ClientEloquentRepo extends Eloquent implements ClientInterface {
 	public function getPlan()
 	{
 		return $this->plan()->first();
+	}
+
+	public function getGateway()
+	{
+		return $this->gateway()->first();
 	}
 
 

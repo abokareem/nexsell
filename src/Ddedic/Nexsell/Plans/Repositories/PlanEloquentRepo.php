@@ -1,8 +1,9 @@
 <?php namespace Ddedic\Nexsell\Plans\Repositories;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
-
 use Ddedic\Nexsell\Plans\PlanInterface;
+
+
 
 class PlanEloquentRepo extends Eloquent implements PlanInterface {
 
