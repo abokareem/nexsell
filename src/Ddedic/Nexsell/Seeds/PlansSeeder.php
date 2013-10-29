@@ -14,7 +14,7 @@ class PlansSeeder extends Seeder {
     public function run() {
 
         $plans = array(
-            (
+            array(
                 'name'              => 'Default plan',
                 'description'       => 'Default plan with strict 25% price adjustment',
                 'price_adjustment'  => '25',
@@ -23,7 +23,7 @@ class PlansSeeder extends Seeder {
                 'updated_at'        => date('Y-m-d H:i:s')
             ),
 
-            (
+            array(
                 'name'              => 'Cheap plan',
                 'description'       => 'Default plan with strict 10% price adjustment',
                 'price_adjustment'  => '10',
