@@ -9,7 +9,6 @@ class CreateClientsTable extends Migration {
 	{
 		Schema::create('clients', function(Blueprint $table) {
 			$table->increments('id');
-			$table->timestamps();
 			$table->string('api_key', 20);
 			$table->string('api_secret', 20);
 			$table->smallInteger('minute_limit')->default('30');
@@ -18,6 +17,7 @@ class CreateClientsTable extends Migration {
 			$table->mediumInteger('gateway_id')->unsigned()->index();
 			$table->float('credit_balance', 8,5);
 			$table->smallInteger('active');
+			$table->timestamps();
 		});
 	}
 

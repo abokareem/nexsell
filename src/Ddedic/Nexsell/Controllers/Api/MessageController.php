@@ -61,18 +61,57 @@ class MessageController extends BaseApiController {
 
 	}
 
+	public function postClient()
+	{
+
+		$build = array();
+
+		$build = $this->client->toArray();
+		$client_messages = $this->client->getMessages;
+
+
+		foreach ($client_messages as $message)
+		{
+			$build['messages'][$message->getMessageId()] = $message->toArray();
+			$build['messages'][$message->getMessageId()]['parts'] = $message->getMessageParts->toArray();
+		}
+
+
+		return API::createResponse($build, 2);
+		//die("<pre>" . print_r($build, TRUE) . "</pre>");
+		
+	}
+
 
 	public function postSend()
 	{
 
+		$build = array();
 
-		//return API::createResponse($this->client->getPlan->getName());
-		$o = $this->client->getPlan;
+		//die("<pre>" . print_r($this->client->__toString(), TRUE) . "</pre>");
 
-		echo "<pre>";
-		var_dump($o);
-		//return API::createResponse($o);
+		$build['client'] = $this->client->toArray();
+		$client_messages = $this->client->getMessages;
 
+
+		foreach ($client_messages as $message)
+		{
+			$build['client']['messages'][$message->getMessageId()] = $message->toArray();
+			$message_parts = $message->getMessageParts;
+
+			foreach ($message_parts as $part)
+			{
+				$build['client']['messages'][$message->getMessageId()]['parts'][$part->getPartId()] = $part->toArray();
+				if ($part->getDeliveryReport)
+					$build['client']['messages'][$message->getMessageId()]['parts'][$part->getPartId()]['delivery_report'] = $part->getDeliveryReport->toArray();
+			}
+
+			
+		}
+
+
+		return API::createResponse($build);
+		//die("<pre>" . print_r($build, TRUE) . "</pre>");
 		
 	}
 

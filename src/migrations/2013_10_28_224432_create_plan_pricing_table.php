@@ -9,13 +9,13 @@ class CreatePlanPricingTable extends Migration {
 	{
 		Schema::create('plan_pricing', function(Blueprint $table) {
 			$table->increments('id');
-			$table->timestamps();
 			$table->integer('plan_id')->unsigned()->index();
 			$table->string('country_code', 3)->index();
-			$table->integer('operator');
+			$table->string('network', 20);
 			$table->float('price_original', 8,5);
 			$table->enum('price_adjustment_type', array('percentage', 'fixed'));
 			$table->float('price_adjustment_value', 8,5);
+			$table->timestamps();
 		});
 	}
 

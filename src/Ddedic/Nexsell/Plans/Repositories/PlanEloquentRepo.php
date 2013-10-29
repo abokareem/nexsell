@@ -14,6 +14,10 @@ class PlanEloquentRepo extends Eloquent implements PlanInterface {
 
 
 
+	public function client()
+	{
+		return $this->belongsTo('Ddedic\Nexsell\Clients\Repositories\ClientEloquentRepo', 'id');
+	}
 
 	public function pricing()
 	{

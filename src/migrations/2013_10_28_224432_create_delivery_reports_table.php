@@ -9,10 +9,10 @@ class CreateDeliveryReportsTable extends Migration {
 	{
 		Schema::create('delivery_reports', function(Blueprint $table) {
 			$table->increments('id');
-			$table->timestamps();
-			$table->integer('message_id')->unsigned()->index();
+			$table->string('part_id', 50)->unique();
 			$table->integer('status');
 			$table->integer('time')->unsigned();
+			$table->timestamps();
 		});
 	}
 

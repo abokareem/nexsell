@@ -5,11 +5,27 @@
 interface MessageInterface {
 
 
+	public function getMessageId();
+
+	public function getCountryCode();
+
     public function getSender();
 
-    public function getPhoneNumber();
+    public function getRecipient();
 
     public function getText();
+
+    public function getPriceOriginal();
+
+    public function getPrice();
+
+    public function getStatus();
+
+    public function getGateway();
+
+    public function getMessageParts();
+
+    public function isDelivered();
     
 
 }

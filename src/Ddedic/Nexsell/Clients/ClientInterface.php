@@ -24,6 +24,6 @@ interface ClientInterface {
 
 	public function getGateway();
 
-
+	public function getMessages();
 
 }

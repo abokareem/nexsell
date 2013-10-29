@@ -10,7 +10,6 @@ class ClientEloquentRepo extends Eloquent implements ClientInterface {
 	protected $table = 'clients';
 
 	public $timestamps = true;
-	protected $softDelete = false;
 	protected $guarded = array('api_key', 'api_secret', 'credit_balance');
 	protected $hidden = array();
 
@@ -27,7 +26,10 @@ class ClientEloquentRepo extends Eloquent implements ClientInterface {
 		return $this->hasOne('Ddedic\Nexsell\Gateways\Repositories\GatewayEloquentRepo', 'id');
 	}
 
-
+	public function messages()
+	{
+		return $this->hasMany('Ddedic\Nexsell\Messages\Repositories\MessageEloquentRepo', 'client_id');
+	}
 
 
 
@@ -80,6 +82,11 @@ class ClientEloquentRepo extends Eloquent implements ClientInterface {
 	public function getGateway()
 	{
 		return $this->gateway();
+	}
+
+	public function getMessages()
+	{
+		return $this->messages();
 	}
 
 

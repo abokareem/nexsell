@@ -54,11 +54,9 @@ class InstallCommand extends Command {
 
 		// Configuration
 		//$this->comment('Publishing configuration...');
-		// $this->call('config:publish', array('package' => 'creolab/krustr'));
-		// $this->call('config:publish', array('--bench' => 'creolab/krustr'));
+		// $this->call('config:publish', array('package' => 'ddedic/nexsell'));
+		// $this->call('config:publish', array('--bench' => 'ddedic/nexsell'));
 
-		// Theme
-		//$this->comment('Publishing default theme...');
 
 		$this->comment('Done. Nexsell installed.');
 	}
