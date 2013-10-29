@@ -28,7 +28,7 @@ class NexsellServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		
-		$loader = \Illuminate\Foundation\AliasLoader::getInstance();
+		$loader = AliasLoader::getInstance();
 
 
 		// Nexsell
