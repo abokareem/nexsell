@@ -13,7 +13,7 @@ class ClientsSeeder extends Seeder {
      */
     public function run() {
 
-        $clients = [
+        $clients = array(
             [
                 'api_key'           => '12345',
                 'api_secret'        => '54321',
@@ -39,7 +39,7 @@ class ClientsSeeder extends Seeder {
                 'created_at'    => date('Y-m-d H:i:s'),
                 'updated_at'    => date('Y-m-d H:i:s')
             ]
-        ];
+        );
         DB::table('clients')->insert($clients);
         $this->command->info('Clients Table Seeded');
 
