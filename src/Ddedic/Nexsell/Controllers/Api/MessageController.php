@@ -1,8 +1,8 @@
 <?php namespace Ddedic\Nexsell\Controllers\Api;
 
 
-use Teepluss\Api\Facades\Api;
-use Input, Request, Response, Nexsell; 
+use Nexsell, Api;
+use Input, Request, Response; 
 
 
 
@@ -121,7 +121,7 @@ class MessageController extends BaseApiController {
 	}	
 
 
-	public function postSend()
+	public function postTest()
 	{
 
 		$build = array();
@@ -159,6 +159,48 @@ class MessageController extends BaseApiController {
 
 
 
+
+
+
+
+
+	public function postSend()
+	{
+
+
+		try {
+
+
+			$from = Input::get('from');
+			$to = Input::get('to');
+			$text = Input::get('text');
+
+			return Nexsell::sendMessage($this->client, $from, $to, $text);
+
+			
+		}
+
+		catch (\Ddedic\Nexsell\Exceptions\RequiredFieldsException $e) {
+
+			return API::createResponse(null, 41);
+			
+		}
+
+		catch (\Ddedic\Nexsell\Exceptions\InvalidFromFieldException $e) {
+
+			return API::createResponse(null, 43);
+			
+		}
+
+		catch (\Ddedic\Nexsell\Exceptions\InvalidToFieldException $e) {
+
+			return API::createResponse(null, 44);
+			
+		}		
+
+
+
+	}
 
 
 

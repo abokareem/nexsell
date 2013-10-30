@@ -11,7 +11,7 @@ class ClientEloquentRepo extends Eloquent implements ClientInterface {
 
 	public $timestamps = true;
 	protected $guarded = array('api_key', 'api_secret', 'credit_balance');
-	protected $hidden = array();
+	protected $hidden = array('created_at', 'updated_at');
 
 
 

@@ -6,8 +6,9 @@ use Illuminate\Support\ServiceProvider;
 
 use Ddedic\Nexsell\Clients;
 use Ddedic\Nexsell\Clients\Repositories\ClientEloquentRepo as ClientProvider;
+use Ddedic\Nexsell\Messages\Repositories\MessageEloquentRepo as MessageProvider;
+use Ddedic\Nexsell\Gateways\Repositories\GatewayEloquentRepo as GatewayProvider;
 
-use Teepluss\Api\Api;
 
 
 
@@ -36,8 +37,7 @@ class NexsellServiceProvider extends ServiceProvider {
 		$this->package('ddedic/nexsell', 'nexsell');
 
 		// API
-		$loader->alias('API', 'Teepluss\Api\Facades\Api');
-		$this->package('teepluss/api', 'api');
+		$loader->alias('API', 'Ddedic\Nexsell\Facades\ApiFacade');
 
 
 
@@ -71,7 +71,7 @@ class NexsellServiceProvider extends ServiceProvider {
 		$this->app['nexsell'] = $this->app->share(function($app)
 		{
 			//return $this->app->make('api')->createResponse($app['config']['nexsell::api']);
-		  	return new Nexsell($app['config'], new ClientProvider);
+		  	return new Nexsell($app['config'], new ClientProvider, new MessageProvider, new GatewayProvider);
 		});
 
 

@@ -2,8 +2,11 @@
 
 use Illuminate\Config\Repository;
 use Ddedic\Nexsell\Clients\ClientInterface;
+use Ddedic\Nexsell\Messages\MessageInterface;
+use Ddedic\Nexsell\Gateways\GatewayInterface;
 
-use API;
+use Ddedic\Nexsell\Exceptions\InvalidFromFieldException;
+use Ddedic\Nexsell\Exceptions\InvalidToFieldException;
 
 
 class Nexsell {
@@ -12,18 +15,18 @@ class Nexsell {
 	protected $config;
 
 	protected $clients;
+	protected $messages;
+	protected $gateways;
 
 
-	public function __construct(Repository $config, ClientInterface $clients)
+	public function __construct(Repository $config, ClientInterface $clients, MessageInterface $messages, GatewayInterface $gateways)
 	{
-		//dd($client);
-
 		$this->config = $config;
+
 		$this->clients = $clients;
+		$this->messages = $messages;
+		$this->gateways = $gateways;
 	}
-
-
-
 
 
 
@@ -31,34 +34,6 @@ class Nexsell {
 	{
 		echo 'Nexell says hello!';
 	}
-
-	public function config()
-	{
-		return $this->config->get('nexsell::api');
-	}
-
-	public function fire($client_id)
-	{
-		//return X::createResponse('Fakat fire!');
-
-		$client = $this->clients->findById($client_id);
-
-		if($client)
-		{
-			$output = $client->getPlan()->get();
-
-		} else {
-
-			$output = array('error' => 'Client not found');
-		}
-
-
-		
-		return API::createResponse($output);
-		//return API::createResponse($this->clients->getAll())
-	}
-
-
 
 
 
@@ -80,16 +55,34 @@ class Nexsell {
 
 
 
-	public function sendMessage(ClientInterface $client, MessageInterface $message, GatewayInterface $gateway)
+	public function sendMessage(ClientInterface $client, $from, $to, $text)
 	{
-		
-		$message = new Message('sender-name', 'receiver-phone-number', 'message text');
 
-		$gateway = new NexmoGateway('username', 'password');
-		$gateway->send($message);
 
-		echo 'Account Balance is: ', $gateway->getBalance();
+		// Params Validation
+
+		if($from === NULL OR $to === NULL OR $text === NULL)
+			throw new RequiredFieldsException;
 		
+		$paramFrom = $this->validateOriginatorFormat($from);
+		$paramTo = $this->validateDestinationFormat($to);
+		$paramText = iconv(mb_detect_encoding($text, mb_detect_order(), true), "UTF-8", $text);
+
+
+		if($paramFrom == '')
+			throw new InvalidFromFieldException;
+
+		if($paramTo == '')
+			throw new InvalidToFieldException;
+
+
+
+		
+		// Nesto
+
+
+
+
 
 	}
 
@@ -97,5 +90,41 @@ class Nexsell {
 
 
 
+
+
+
+    private function validateOriginatorFormat($inp){
+            // Remove any invalid characters
+            $ret = preg_replace('/[^a-zA-Z0-9]/', '', (string)$inp);
+
+            if(preg_match('/[a-zA-Z]/', $inp)){
+
+                    // Alphanumeric format so make sure it's < 11 chars
+                    $ret = substr($ret, 0, 11);
+
+            } else {
+
+                    // Numerical, remove any prepending '00'
+                    if(substr($ret, 0, 2) == '00'){
+                            $ret = substr($ret, 2);
+                            $ret = substr($ret, 0, 15);
+                    }
+
+                    // Numerical, remove any prepending '+'
+                    if(substr($ret, 0, 1) == '+'){
+                            $ret = substr($ret, 1);
+                            $ret = substr($ret, 0, 15);
+                    }
+            }
+            
+            return (string)$ret;
+    }
+
+    private function validateDestinationFormat($inp){
+            // Remove any invalid characters
+            $ret = preg_replace('/[^0-9]/', '', (string)$inp);
+            
+            return (string)$ret;
+    }
 
 }

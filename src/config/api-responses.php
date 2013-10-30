@@ -3,6 +3,15 @@
 return array(
 
     'statuses' => array(
+
+        // Nexsell error responses
+        40 => 'Unknown error',
+        41 => 'Missing required fields',
+        42 => 'Invalid fields format',
+        43 => 'Invalid "from" param',
+        44 => 'Invalid "to" param',
+
+
         //Informational 1xx
         100 => '100 Continue',
         101 => '101 Switching Protocols',
@@ -53,6 +62,7 @@ return array(
         505 => '505 HTTP Version Not Supported'
     ),
 
+    'httpResponse'  => false,
     'defaultFormat' => 'json'
 
 
