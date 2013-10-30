@@ -43,11 +43,6 @@ class MessagePartEloquentRepo extends Eloquent implements MessagePartInterface {
     public function getPrice()
     {
         return $this->price;
-    }    
-
-    public function getStatus()
-    {
-        return $this->status;
     }     
 
     public function getDeliveryReport()

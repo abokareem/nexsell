@@ -13,7 +13,6 @@ class CreateMessagesPartsTable extends Migration {
 			$table->string('network', 20);
 			$table->bigInteger('to')->unsigned();
 			$table->float('price', 8,5);
-			$table->integer('status');
 			$table->timestamps();
 		});
 	}

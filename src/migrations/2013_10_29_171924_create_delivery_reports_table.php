@@ -10,7 +10,7 @@ class CreateDeliveryReportsTable extends Migration {
 		Schema::create('delivery_reports', function(Blueprint $table) {
 			$table->increments('id');
 			$table->string('part_id', 50)->unique();
-			$table->integer('status');
+			$table->enum('status', array('buffered', 'delivered', 'expired', 'failed'));
 			$table->integer('time')->unsigned();
 			$table->timestamps();
 		});

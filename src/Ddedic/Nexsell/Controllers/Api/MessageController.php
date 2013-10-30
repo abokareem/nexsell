@@ -83,6 +83,44 @@ class MessageController extends BaseApiController {
 	}
 
 
+	public function postDelivered()
+	{
+
+		$build = array();
+
+		//die("<pre>" . print_r($this->client->__toString(), TRUE) . "</pre>");
+
+		$build['client'] = $this->client->toArray();
+		$client_messages = $this->client->getMessages;
+
+
+		foreach ($client_messages as $message)
+		{
+			// messages
+			$build['client']['messages'][$message->getMessageId()] = $message->toArray();
+			$message_parts = $message->getMessageParts;
+
+			// is delivered
+			$build['client']['messages'][$message->getMessageId()]['is_delivered'] = $message->isDelivered();
+
+			// message parts
+			/*
+			foreach ($message_parts as $part)
+			{
+				$build['client']['messages'][$message->getMessageId()]['parts'][$part->getPartId()] = $part->toArray();
+				if ($part->getDeliveryReport)
+					$build['client']['messages'][$message->getMessageId()]['parts'][$part->getPartId()]['delivery_report'] = $part->getDeliveryReport->toArray();
+			}
+			*/
+			
+		}
+
+		return API::createResponse($build);
+		//die("<pre>" . print_r($build, TRUE) . "</pre>");
+		
+	}	
+
+
 	public function postSend()
 	{
 
@@ -96,9 +134,11 @@ class MessageController extends BaseApiController {
 
 		foreach ($client_messages as $message)
 		{
+			// messages
 			$build['client']['messages'][$message->getMessageId()] = $message->toArray();
 			$message_parts = $message->getMessageParts;
 
+			// message parts
 			foreach ($message_parts as $part)
 			{
 				$build['client']['messages'][$message->getMessageId()]['parts'][$part->getPartId()] = $part->toArray();
@@ -109,11 +149,19 @@ class MessageController extends BaseApiController {
 			
 		}
 
-
 		return API::createResponse($build);
 		//die("<pre>" . print_r($build, TRUE) . "</pre>");
 		
 	}
+
+
+
+
+
+
+
+
+
 
 
 

@@ -13,8 +13,6 @@ interface MessagePartInterface {
 
     public function getPrice();
 
-    public function getStatus();
-
     public function getDeliveryReport();
     
 

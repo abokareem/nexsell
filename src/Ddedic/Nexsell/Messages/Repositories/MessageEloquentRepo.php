@@ -82,7 +82,29 @@ class MessageEloquentRepo extends Eloquent implements MessageInterface {
 
     public function isDelivered()
     {
-        return;
+        $delivered = FALSE;
+        $message_parts = $this->getMessageParts;
+        $success_count = 0;
+
+        foreach ($message_parts as $msgpart)
+        {
+            if ($msgpart->getDeliveryReport)
+                if($msgpart->getDeliveryReport->getStatus() == 'delivered')
+                    $success_count++;
+        }
+
+        if ($success_count == count($message_parts))
+            $delivered = TRUE;
+
+
+        return $delivered;
     }
+
+
+
+
+
+
+
 
 }
