@@ -7,6 +7,8 @@ interface PlanInterface {
 
 	public function getName();
 
+	public function gePlanId();
+
 	public function getDescription();
 
 	public function getPriceAdjustment();
@@ -15,5 +17,5 @@ interface PlanInterface {
 
 	public function findById($id);
 
-
+	public function getPricing();
 }

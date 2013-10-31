@@ -6,6 +6,7 @@ class RequiredFieldsException extends \UnexpectedValueException {}
 class InvalidFieldFormatException extends \UnexpectedValueException {}
 class InvalidFromFieldException extends InvalidFieldFormatException {}
 class InvalidToFieldException extends InvalidFieldFormatException {}
+class InvalidDestinationException extends InvalidFieldFormatException{}
 
 
 class LoginRequiredException extends \UnexpectedValueException {}

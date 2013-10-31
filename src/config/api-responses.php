@@ -10,6 +10,7 @@ return array(
         42 => 'Invalid fields format',
         43 => 'Invalid "from" param',
         44 => 'Invalid "to" param',
+        45 => 'Invalid destination country',
 
 
         //Informational 1xx

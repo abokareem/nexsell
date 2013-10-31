@@ -16,19 +16,24 @@ class PlanEloquentRepo extends Eloquent implements PlanInterface {
 
 	public function client()
 	{
-		return $this->belongsTo('Ddedic\Nexsell\Clients\Repositories\ClientEloquentRepo', 'id');
+		return $this->belongsToMany('Ddedic\Nexsell\Clients\Repositories\ClientEloquentRepo', 'id');
 	}
 
 	public function pricing()
 	{
-		//return $this->hasMany('Pricing', 'plan_id');
-		return;
+		return $this->hasMany('Ddedic\Nexsell\Plans\Repositories\PlanPricingEloquentRepo', 'plan_id');
 	}
+
 
 
 	public function getAll()
 	{
-		return $this-all();
+		return $this->all();
+	}
+
+	public function gePlanId()
+	{
+		return $this->id;
 	}
 
 	public function getName()
@@ -54,10 +59,14 @@ class PlanEloquentRepo extends Eloquent implements PlanInterface {
 			return false;
 	}
 
-	
 	public function findById($id)
 	{
 		return $this->find($id);
+	}
+
+	public function getPricing()
+	{
+		return $this->pricing();
 	}
 
 }

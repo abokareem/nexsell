@@ -11,7 +11,9 @@ class CreatePlanPricingTable extends Migration {
 			$table->increments('id');
 			$table->integer('plan_id')->unsigned()->index();
 			$table->string('country_code', 3)->index();
-			$table->string('network', 20);
+			$table->string('network_name', 20);
+			$table->string('network_code', 20);
+			$table->bigInteger('number_prefix')->unique()->unsigned();
 			$table->float('price_original', 8,5);
 			$table->enum('price_adjustment_type', array('percentage', 'fixed'));
 			$table->float('price_adjustment_value', 8,5);

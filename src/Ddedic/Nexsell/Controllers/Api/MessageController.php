@@ -196,7 +196,13 @@ class MessageController extends BaseApiController {
 
 			return API::createResponse(null, 44);
 			
-		}		
+		}	
+
+		catch (\Ddedic\Nexsell\Exceptions\InvalidDestinationException $e) {
+
+			return API::createResponse(null, 45);
+			
+		}				
 
 
 
