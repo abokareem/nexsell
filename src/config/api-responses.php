@@ -11,6 +11,8 @@ return array(
         43 => 'Invalid "from" param',
         44 => 'Invalid "to" param',
         45 => 'Invalid destination country',
+        46 => 'Invalid gateway provider',
+        47 => 'Inactive gateway provider',
 
 
         //Informational 1xx

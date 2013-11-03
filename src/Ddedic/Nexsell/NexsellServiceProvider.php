@@ -10,7 +10,7 @@ use Ddedic\Nexsell\Messages\Repositories\MessageEloquentRepo as MessageProvider;
 use Ddedic\Nexsell\Gateways\Repositories\GatewayEloquentRepo as GatewayProvider;
 use Ddedic\Nexsell\Plans\Repositories\PlanEloquentRepo as PlanProvider;
 use Ddedic\Nexsell\Plans\Repositories\PlanPricingEloquentRepo as PlanPricingProvider;
-use Ddedic\Nexsell\Countries\Repositories\CountryEloquentRepo as CountryProvider;
+
 
 
 
@@ -64,6 +64,12 @@ class NexsellServiceProvider extends ServiceProvider {
 	
 	public function register()
 	{
+
+		// Numtector
+        $this->app->register('Ddedic\\Numtector\\NumtectorServiceProvider');
+
+
+        // Api
 		$this->app['api'] = $this->app->share(function($app)
 		{
 			$remoteClient = new Client();
@@ -71,19 +77,13 @@ class NexsellServiceProvider extends ServiceProvider {
 		});
 
 
+		// Nexsell
 		$this->app['nexsell'] = $this->app->share(function($app)
 		{
 			//return $this->app->make('api')->createResponse($app['config']['nexsell::api']);
-		  	return new Nexsell($app['config'], new ClientProvider, new MessageProvider, new GatewayProvider, new PlanProvider, new PlanPricingProvider, new CountryProvider);
+		  	return new Nexsell($app['config'], new ClientProvider, new MessageProvider, new GatewayProvider, new PlanProvider, new PlanPricingProvider);
 		});
 
-
-		/*
-	    $this->app->bind(
-	      'Ddedic\Nexsell\Countries\CountryInterface',
-	      'Ddedic\Nexsell\Countries\Repositories\CountryEloquentRepo'
-	    );		
-		*/
 
 	}
 

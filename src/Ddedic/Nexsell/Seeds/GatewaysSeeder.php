@@ -17,7 +17,7 @@ class GatewaysSeeder extends Seeder {
             array(
                 'name'              => 'Nexmo (default)',
                 'description'       => 'Nexmo defult gateway',
-                'class_name'        => 'NexmoGateway',
+                'class_name'        => 'Nexmo\NexmoGateway',
                 'api_key'           => '--apikey--',
                 'api_secret'        => '--apisecret--',
                 'active'            =>  1,

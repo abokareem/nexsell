@@ -156,7 +156,12 @@ class MessageController extends BaseApiController {
 
 
 
+	public function postNexmo()
+	{
 
+		return Nexsell::testClient();
+
+	}
 
 
 
@@ -204,6 +209,17 @@ class MessageController extends BaseApiController {
 			
 		}				
 
+		catch (\Ddedic\Nexsell\Exceptions\InactiveGatewayProviderException $e) {
+
+			return API::createResponse(null, 47);
+			
+		}
+
+		catch (\Ddedic\Nexsell\Exceptions\InvalidGatewayProviderException $e) {
+
+			return API::createResponse(null, 46);
+			
+		}
 
 
 	}

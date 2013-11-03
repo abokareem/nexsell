@@ -4,13 +4,20 @@ use Illuminate\Config\Repository;
 use Ddedic\Nexsell\Clients\ClientInterface;
 use Ddedic\Nexsell\Messages\MessageInterface;
 use Ddedic\Nexsell\Gateways\GatewayInterface;
-use Ddedic\Nexsell\Countries\CountryInterface;
+use Ddedic\Nexsell\Gateways\Providers\GatewayProviderInterface;
 use Ddedic\Nexsell\Plans\PlanInterface;
 use Ddedic\Nexsell\Plans\PlanPricingInterface;
 
 use Ddedic\Nexsell\Exceptions\InvalidFromFieldException;
 use Ddedic\Nexsell\Exceptions\InvalidToFieldException;
 use Ddedic\Nexsell\Exceptions\InvalidDestinationException;
+use Ddedic\Nexsell\Exceptions\InvalidGatewayProviderException;
+use Ddedic\Nexsell\Exceptions\InactiveGatewayProviderException;
+
+use Response, Numtector;
+use Guzzle\Http\Client;
+
+
 
 class Nexsell {
 
@@ -22,10 +29,11 @@ class Nexsell {
 	protected $gateways;
 	protected $plans;
 	protected $plan_pricings;
-	protected $countries;
+
+	protected $gatewayProvidersPath;
 
 
-	public function __construct(Repository $config, ClientInterface $clients, MessageInterface $messages, GatewayInterface $gateways, PlanInterface $plans, PlanPricingInterface $pricings, CountryInterface $countries)
+	public function __construct(Repository $config, ClientInterface $clients, MessageInterface $messages, GatewayInterface $gateways, PlanInterface $plans, PlanPricingInterface $pricings)
 	{
 		$this->config = $config;
 
@@ -34,7 +42,8 @@ class Nexsell {
 		$this->gateways = $gateways;
 		$this->plans = $plans;
 		$this->plan_pricings = $pricings;
-		$this->countries = $countries;
+
+		$this->gatewayProvidersPath = 'Ddedic\Nexsell\Gateways\Providers\\';
 	}
 
 
@@ -43,6 +52,72 @@ class Nexsell {
 	{
 		echo 'Nexell says hello!';
 	}
+
+
+
+	public function testClient()
+	{
+
+        $remoteClient = new Client('https://rest.nexmo.com');
+
+        // Parameters for GET, POST
+        //$parameters = ($parameters) ? current($parameters) : array();
+
+
+        $method = 'get';
+        $uri = 'account/get-pricing/outbound';
+        $parameters = array('api_key' => '6d3970a2', 'api_secret' => '4424dd3d', 'country' => 'BA');
+
+        // Make request.
+        // $request = $remoteClient->get($uri, array(), $parameters);
+		$request = $remoteClient->get($uri, array(), array(
+					    'query' => $parameters
+					));
+
+
+        // Send request.
+        
+       // try {
+            
+			
+
+
+            $response = $request->send();    
+
+       /* } catch (\Guzzle\Common\Exception\GuzzleException $e) {
+            
+            //dd($e->getResponse()->getReasonPhrase());
+            $response = array(
+                'status'     => 'error',
+                'code'       => $e->getResponse()->getStatusCode(),
+                'message'    => $e->getResponse()->getReasonPhrase()
+            );
+
+            return Response::json($response);            
+        }
+	*/
+
+
+
+        // Body responsed.
+        $body = (string) $response->getBody();
+
+
+        // Decode json content.
+        if ($response->getContentType() == 'application/json' OR ($response->getContentType() == 'application/json;charset=UTF-8'))
+        {
+            if (function_exists('json_decode') and is_string($body))
+            {
+                $body = json_decode($body, true);
+            }
+        }
+
+
+        return $body;
+
+
+	}
+
 
 
 
@@ -87,44 +162,88 @@ class Nexsell {
 
 
 		// Detect possible countries
-		$possibleCountries = $this->countries->detectCountriesByPhoneNumber($paramTo);
+		$possibleCountries = Numtector::detectCountries($paramTo);
+
 
 		if (count($possibleCountries) == 0)
 			throw new InvalidDestinationException;
 
+ 
 
 
-		// Plan pricing
-		if ($pricePerMessage = $this->plan_pricings->getPricingForDestination($client->getPlan->id, $possibleCountries, $paramTo))
-		{
-
-			//echo $pricePerMessage;
-
-			// prebroji poruke, pomnozi sa cijenom, usporedi sa balansom, pokusaj poslati
+		$gatewayProvider 	=  $this->_setupGatewayProvider($client);
+		$pricePerMessage 	=  $this->_getPricePerMessage($client, $gatewayProvider, $possibleCountries, $paramTo);
 
 
 
 
+	
+		return ($pricePerMessage);
 
-		} else {
-
-			//echo 'nema';
-
-			// pokusaj dobiti Live pricing od gatewaya, spremi u bazu odgovor, pa ovo gore, prebroji, mnozi, usporedi i pokusaj poslati
-		}
-
-
-
-
-		//dd($pricePerMessage);
 
 	}
 
 
 
+	private function _setupGatewayProvider(ClientInterface $client)
+	{
+
+ 		// Gateway init
+ 		$gatewayClass = $this->gatewayProvidersPath . $client->getGateway->class_name;
+
+ 		if(!class_exists($gatewayClass)){
+ 			throw new InvalidGatewayProviderException;
+ 		}
+
+ 		if ($client->getGateway->active == 0 OR $client->getGateway->active == '0')
+ 		{
+ 			throw new InactiveGatewayProviderException;
+ 		}
+
+		return new $gatewayClass ($client->getGateway->api_key, $client->getGateway->api_secret);
+
+	}
 
 
+	private function _getPricePerMessage(ClientInterface $client, GatewayProviderInterface $gateway, array $possibleCountries, $paramTo)
+	{
+		// Plan pricing
+		if (! $pricePerMessage = $this->plan_pricings->getPricingForDestination($client->getPlan->id, $possibleCountries, $paramTo))
+		{
+			// attempt to get pricing directly from gateway
 
+
+			try {
+
+				// get api pricing
+				// save to db
+				// again getPricingForDestination
+
+				$o = array();
+
+				foreach($possibleCountries as $country)
+				{
+					$o[] = $gateway->getPricing($country['iso_code']);
+				}
+
+				return $o;
+				
+			}
+
+			catch (Exceptions\GatewayException $e)
+			{
+				// some error 
+				return;
+			}
+
+
+		} else {
+			
+			// found message price, attempt to send message
+			return $pricePerMessage;
+
+		}		
+	}
 
 
     private function validateOriginatorFormat($inp){

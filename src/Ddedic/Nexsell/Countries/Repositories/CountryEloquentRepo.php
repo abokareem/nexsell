@@ -46,7 +46,7 @@ class CountryEloquentRepo extends Eloquent implements CountryInterface {
         	{
         		foreach ($results as $c)
         		{
-        			$countries[$c->iso] = array('name' => $c->nicename, 'phone_prefix' => $c->phonecode);	
+        			$countries[$c->iso] = array('name' => $c->nicename, 'iso_code' => $c->iso ,'phone_prefix' => $c->phonecode);	
         		}
         	}
         }

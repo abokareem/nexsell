@@ -273,7 +273,7 @@ class Api {
 
 
         // Decode json content.
-        if ($response->getContentType() == 'application/json')
+        if ($response->getContentType() == 'application/json' OR ($response->getContentType() == 'application/json;charset=UTF-8'))
         {
             if (function_exists('json_decode') and is_string($body))
             {
