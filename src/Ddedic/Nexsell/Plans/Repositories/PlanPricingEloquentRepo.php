@@ -70,30 +70,24 @@ class PlanPricingEloquentRepo extends Eloquent implements PlanPricingInterface {
 	}
 
 
-	public function getPricingForDestination($planId, $countries, $destinationNumber)
+	public function getMessagePrice($planId, $destination)
 	{
 
     	$found = false;
     	$priceValue = null;
 
-    	foreach ($countries as $country)
-    	{
-	        for( $i = 10; $i >= 1; --$i )
-	        {
-	                $check = $this->where('plan_id', $planId)->where('number_prefix', $country['phone_prefix']  . substr ($destinationNumber, strlen($country['phone_prefix']), $i))->first();
-	                if( $check ) {
 
-	                		if ($check->price_adjustment_type == "percentage")
-	                			$priceValue = $check->price_original + ($check->price_original * ($check->price_adjustment_value / 100));
-	                		else
-	                			$priceValue = $check->price_adjustment_value;
+    	
+        $check = $this->where('plan_id', $planId)->where('country_code', $destination['country']['iso'])->where('network_code', $destination['network']['network_code'])->first();
+        if( $check ) {
 
-	                		
-	                        $found = true;
-	                }
-	                if( $found ) { break; }
-	        }
-    	}
+        		if ($check->price_adjustment_type == "percentage")
+        			$priceValue = $check->price_original + ($check->price_original * ($check->price_adjustment_value / 100));
+        		else
+        			$priceValue = $check->price_adjustment_value;
+
+        }
+	            	
 
 
     	return $priceValue;		

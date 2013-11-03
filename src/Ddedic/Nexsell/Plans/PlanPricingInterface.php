@@ -23,6 +23,6 @@ interface PlanPricingInterface {
 
 	public function findById($id);
 
-	public function getPricingForDestination($planId, $countries, $destinationNumber);
+	public function getMessagePrice($planId, $destination);
 
 }

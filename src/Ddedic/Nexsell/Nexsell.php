@@ -161,18 +161,17 @@ class Nexsell {
 
 
 
-		// Detect possible countries
-		$possibleCountries = Numtector::detectCountries($paramTo);
-
-
-		if (count($possibleCountries) == 0)
+		// process destination number
+		if(! $destination = Numtector::processNumber($paramTo))
 			throw new InvalidDestinationException;
+
+			
 
  
 
 
 		$gatewayProvider 	=  $this->_setupGatewayProvider($client);
-		$pricePerMessage 	=  $this->_getPricePerMessage($client, $gatewayProvider, $possibleCountries, $paramTo);
+		$pricePerMessage 	=  $this->_getPricePerMessage($client, $gatewayProvider, $destination);
 
 
 
@@ -205,10 +204,10 @@ class Nexsell {
 	}
 
 
-	private function _getPricePerMessage(ClientInterface $client, GatewayProviderInterface $gateway, array $possibleCountries, $paramTo)
+	private function _getPricePerMessage(ClientInterface $client, GatewayProviderInterface $gateway, array $destination)
 	{
 		// Plan pricing
-		if (! $pricePerMessage = $this->plan_pricings->getPricingForDestination($client->getPlan->id, $possibleCountries, $paramTo))
+		if (! $pricePerMessage = $this->plan_pricings->getMessagePrice($client->getPlan->id, $destination))
 		{
 			// attempt to get pricing directly from gateway
 
@@ -216,17 +215,8 @@ class Nexsell {
 			try {
 
 				// get api pricing
-				// save to db
-				// again getPricingForDestination
-
-				$o = array();
-
-				foreach($possibleCountries as $country)
-				{
-					$o[] = $gateway->getPricing($country['iso_code']);
-				}
-
-				return $o;
+				//
+				return $destination;
 				
 			}
 
