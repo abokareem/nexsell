@@ -70,6 +70,42 @@ class NexmoGateway implements GatewayProviderInterface
 	}
 
 
+	public function getDestinationPricing(array $destination)
+	{
+
+		$found = false;
+		$price = null;
+		$response = $this->getPricing($destination['country']['iso']);
+
+			if(isset($response))
+			{
+
+				if(isset($response['country']))
+				{
+					if(isset($response['networks']))
+					{
+						foreach($response['networks'] as $network)
+						{
+
+
+							if ($network['code'] == $destination['network']['network_code'])
+							{
+								$found = true;
+								$price = $network['mtPrice'];
+							}
+
+							if($found) { break; }
+						}
+					}
+
+				}
+
+			}
+
+
+			return $price;
+	}
+
 
 	public function getAccountBalance()
 	{
@@ -106,17 +142,17 @@ class NexmoGateway implements GatewayProviderInterface
 
         } catch (\Guzzle\Common\Exception\GuzzleException $e) {
             
-            //dd($e->getResponse()->getReasonPhrase());
+            /*
             $response = array(
                 'code'       => $e->getResponse()->getStatusCode(),
                 'message'    => $e->getResponse()->getReasonPhrase()
             );
+            */
+            //throw new InvalidRequestException('InvalidRequestException: Code (' . $response['code'] . ') - Message: ' . $response['message']);
 
-            //return Response::json($response);
+            throw new InvalidRequestException('InvalidRequestException');
 
-            throw new InvalidRequestException;
         }
-	
 
 
         // Body responsed.
@@ -132,7 +168,7 @@ class NexmoGateway implements GatewayProviderInterface
 
         } else {
 
-        	throw new InvalidGatewayResponseException;
+        	throw new InvalidGatewayResponseException();
 
         }
 

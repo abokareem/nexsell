@@ -4,15 +4,6 @@ use Guzzle\Http\Client;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
-use Ddedic\Nexsell\Clients;
-use Ddedic\Nexsell\Clients\Repositories\ClientEloquentRepo as ClientProvider;
-use Ddedic\Nexsell\Messages\Repositories\MessageEloquentRepo as MessageProvider;
-use Ddedic\Nexsell\Gateways\Repositories\GatewayEloquentRepo as GatewayProvider;
-use Ddedic\Nexsell\Plans\Repositories\PlanEloquentRepo as PlanProvider;
-use Ddedic\Nexsell\Plans\Repositories\PlanPricingEloquentRepo as PlanPricingProvider;
-
-
-
 
 
 class NexsellServiceProvider extends ServiceProvider {
@@ -77,12 +68,25 @@ class NexsellServiceProvider extends ServiceProvider {
 		});
 
 
-		// Nexsell
-		$this->app['nexsell'] = $this->app->share(function($app)
+
+		$this->app->singleton('Clients\ClientInterface', 'Clients\Repositories\ClientEloquentRepo');
+		$this->app->singleton('Messages\MessageInterface', 'Messages\Repositories\MessageEloquentRepo');
+		$this->app->singleton('Gateways\GatewayInterface', 'Gateways\Repositories\GatewayEloquentRepo');
+		$this->app->singleton('Plans\PlanInterface', 'Plans\Repositories\PlanEloquentRepo');
+		$this->app->singleton('Plans\PlanPricingInterface', 'Plans\Repositories\PlanPricingEloquentRepo');
+
+
+
+		$this->app->bind('nexsell', function($app)
 		{
-			//return $this->app->make('api')->createResponse($app['config']['nexsell::api']);
-		  	return new Nexsell($app['config'], new ClientProvider, new MessageProvider, new GatewayProvider, new PlanProvider, new PlanPricingProvider);
-		});
+			return new Nexsell($app['config'],
+								 new Clients\Repositories\ClientEloquentRepo,
+								 new Messages\Repositories\MessageEloquentRepo,
+								 new Gateways\Repositories\GatewayEloquentRepo,
+								 new Plans\Repositories\PlanEloquentRepo,
+								 new Plans\Repositories\PlanPricingEloquentRepo
+							 );
+		});		
 
 
 	}

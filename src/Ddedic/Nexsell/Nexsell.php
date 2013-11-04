@@ -13,8 +13,10 @@ use Ddedic\Nexsell\Exceptions\InvalidToFieldException;
 use Ddedic\Nexsell\Exceptions\InvalidDestinationException;
 use Ddedic\Nexsell\Exceptions\InvalidGatewayProviderException;
 use Ddedic\Nexsell\Exceptions\InactiveGatewayProviderException;
+use Ddedic\Nexsell\Exceptions\UnsupportedDestinationException;
+use Ddedic\Nexsell\Exceptions\InvalidRequestException;
 
-use Response, Numtector;
+use App, Response, Numtector;
 use Guzzle\Http\Client;
 
 
@@ -164,9 +166,6 @@ class Nexsell {
 		// process destination number
 		if(! $destination = Numtector::processNumber($paramTo))
 			throw new InvalidDestinationException;
-
-			
-
  
 
 
@@ -177,7 +176,7 @@ class Nexsell {
 
 
 	
-		return ($pricePerMessage);
+		dd ($pricePerMessage);
 
 
 	}
@@ -201,31 +200,48 @@ class Nexsell {
 
 		return new $gatewayClass ($client->getGateway->api_key, $client->getGateway->api_secret);
 
+
+
+
 	}
 
 
 	private function _getPricePerMessage(ClientInterface $client, GatewayProviderInterface $gateway, array $destination)
 	{
+		//dd($client->plan->gePlanId());
 		// Plan pricing
 		if (! $pricePerMessage = $this->plan_pricings->getMessagePrice($client->getPlan->id, $destination))
 		{
 			// attempt to get pricing directly from gateway
 
-
-			try {
-
 				// get api pricing
-				//
-				return $destination;
-				
-			}
+				if($gatewayPrice = $gateway->getDestinationPricing($destination))
+				{
 
-			catch (Exceptions\GatewayException $e)
-			{
-				// some error 
-				return;
-			}
+					if (! $client->plan->isStrict())
+					{
 
+						
+						$planPricing = new $this->plan_pricings();
+
+						$planPricing->country_code = $destination['country']['iso'];
+						$planPricing->network_code = $destination['network']['network_code'];
+						$planPricing->price_original = $gatewayPrice;
+						$planPricing->price_adjustment_type = 'percentage';
+						$planPricing->price_adjustment_value = $client->plan->getPriceAdjustmentValue();
+
+						$client->plan->pricing()->save($planPricing);
+						
+						
+						return $pricePerMessage = $this->plan_pricings->getMessagePrice($client->getPlan->id, $destination);
+
+					}
+
+
+				} else {
+
+					throw new UnsupportedDestinationException;
+				}
 
 		} else {
 			

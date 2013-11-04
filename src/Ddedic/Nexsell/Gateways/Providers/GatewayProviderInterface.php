@@ -9,6 +9,8 @@ interface GatewayProviderInterface {
 
 	public function getPricing($country);
 
+	public function getDestinationPricing(array $destination);
+
 	public function getAccountBalance();
 
 }

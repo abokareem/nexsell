@@ -18,12 +18,12 @@ class ClientEloquentRepo extends Eloquent implements ClientInterface {
 
 	public function plan()
 	{
-		return $this->hasOne('Ddedic\Nexsell\Plans\Repositories\PlanEloquentRepo', 'id');
+		return $this->belongsTo('Ddedic\Nexsell\Plans\Repositories\PlanEloquentRepo', 'plan_id');
 	}
 
 	public function gateway()
 	{
-		return $this->hasOne('Ddedic\Nexsell\Gateways\Repositories\GatewayEloquentRepo', 'id');
+		return $this->belongsTo('Ddedic\Nexsell\Gateways\Repositories\GatewayEloquentRepo', 'gateway_id');
 	}
 
 	public function messages()

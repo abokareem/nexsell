@@ -15,6 +15,8 @@ interface PlanInterface {
 
 	public function isStrict();
 
+	public function getPriceAdjustmentValue();
+
 	public function findById($id);
 
 	public function getPricing();

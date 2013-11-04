@@ -13,6 +13,8 @@ return array(
         45 => 'Invalid destination',
         46 => 'Invalid gateway provider',
         47 => 'Inactive gateway provider',
+        48 => 'Invalid request from the server',
+        49 => 'Unsupported destination',
 
 
         //Informational 1xx

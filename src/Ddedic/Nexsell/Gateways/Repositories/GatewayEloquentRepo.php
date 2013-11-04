@@ -18,7 +18,7 @@ class GatewayEloquentRepo extends Eloquent implements GatewayInterface {
 
 	public function clients()
 	{
-		return $this->hasMany('Ddedic\Nexsell\Clients\Repositories\ClientEloquentRepo', 'id');
+		return $this->hasMany('Ddedic\Nexsell\Clients\Repositories\ClientEloquentRepo', 'gateway_id');
 	}
 
 	public function message()
