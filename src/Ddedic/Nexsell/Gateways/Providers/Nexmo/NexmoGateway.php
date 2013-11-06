@@ -1,8 +1,9 @@
 <?php namespace Ddedic\Nexsell\Gateways\Providers\Nexmo;
 
+use Ddedic\Nexsell\Messages\MessageInterface;
 use Ddedic\Nexsell\Gateways\Providers\GatewayProviderInterface;
 use Guzzle\Http\Client;
-use Response;
+use Response, Str;
 
 use Ddedic\Nexsell\Exceptions\InvalidGatewayResponseException;
 use Ddedic\Nexsell\Exceptions\InvalidRequestException;
@@ -18,6 +19,7 @@ class NexmoGateway implements GatewayProviderInterface
 
 	protected $remoteClient;
 
+	public static $send_message_url = 'sms/json';
     public static $balance_url 	= 'account/get-balance';
     public static $pricing_url 	= 'account/get-pricing/outbound';
     public static $account_url 	= 'account/settings';
@@ -49,10 +51,43 @@ class NexmoGateway implements GatewayProviderInterface
 	}
 
 
-
-	public function sendMessage($from, $to, $text)
+	public function sampleResponse(MessageInterface $message)
 	{
-		return;
+		$response = array(
+				'message-count'	=> 2,
+				'messages'		=> array( 
+										array(
+											'status' => '0',
+											'message-id' => Str::quickRandom(),
+											'to'	=> $message->to,
+											'client-ref' => $message->id,
+											'remaining-balance'	=> 10.0000,
+											'message-price' => 0.0110000,
+											'network' => '2233ED'
+										),
+										array(
+											'status' => '3',
+											'message-id' => Str::quickRandom(),
+											'to'	=> $message->to,
+											'client-ref' => $message->id,
+											'remaining-balance'	=> 10.0000,
+											'message-price' => 0.0110000,
+											'network' => '2233ED',
+											'error-text' => 'Dummy error msg!'
+										)
+									)				
+			);
+
+		return $response;
+
+	}
+
+
+	public function sendMessage(MessageInterface $message)
+	{
+		$response = $this->postRemote(self::$send_message_url, array('from' => $message->from, 'to' =>  $message->to, 'text' => $message->text, 'client-ref' => $message->id));
+		//$response = $this->sampleResponse($message);
+		return $this->formNexmoMessageResponse($response);
 	}
 
 
@@ -117,7 +152,73 @@ class NexmoGateway implements GatewayProviderInterface
 
 
 
+	private function formNexmoMessageResponse($nexmoResponse)
+	{
+		$response = array('status' => 'error', 'status_msg' => null);
 
+		if (isset($nexmoResponse['message-count']) AND (int)$nexmoResponse['message-count'] > 0)
+		{
+
+			if (count($nexmoResponse['messages']) == $nexmoResponse['message-count'])
+			{
+
+				$allSuccess = true;
+				$errorMessage = null;
+
+				foreach ($nexmoResponse['messages'] as $message)
+				{
+					if ($message['status'] !== '0') {
+
+						$allSuccess = false;
+						$errorMessage = $message['error-text'];
+						break;						
+
+					}
+
+				}
+
+				if ($allSuccess)
+				{
+
+					$buildMessageParts = array();
+					$totalPrice = 0;
+
+
+					foreach ($nexmoResponse['messages'] as $message)
+					{
+
+						$buildMessageParts[] = array(
+								'id'			=>	$message['message-id'],
+								'message_id'	=>	isset($message['client-ref']) ? $message['client-ref'] : 0,
+								'network'		=>	$message['network'],
+								'to'			=>	$message['to'],
+								'price'			=>	$message['message-price']
+							);
+
+						$totalPrice = (float) $totalPrice + (float) $message['message-price'];
+
+					}
+
+					$response = array('status' => 'success', 'message_parts' => $buildMessageParts, 'total_price' => $totalPrice);
+
+				} else {
+
+					$response = array('status' => 'error', 'status_msg' => $errorMessage);
+				}
+
+
+			}
+
+			
+		} else {
+
+			$response = array('status' => 'error', 'status_msg' => 'Empty response from Nexmo gateway');
+
+		}
+
+
+		return $response;
+	}
 
 
 
@@ -136,9 +237,7 @@ class NexmoGateway implements GatewayProviderInterface
         
        try {
             
-            $response = $request->send();    
-
-            
+            $response = $request->send();
 
         } catch (\Guzzle\Common\Exception\GuzzleException $e) {
             
@@ -155,44 +254,91 @@ class NexmoGateway implements GatewayProviderInterface
         }
 
 
+        return $this->parseResponse($response);
+	}
+
+
+	private function postRemote($uri, $params)
+	{
+        $base_params = array('api_key' => $this->api_key, 'api_secret' => $this->api_secret);
+        $parameters = ($params) ? array_merge($base_params, $params) : $base_params;
+
+		$request = $this->remoteClient->post($uri, array(), $parameters, array());
+
+        
+       try {
+            
+            $response = $request->send();    
+
+            
+
+        } catch (\Guzzle\Common\Exception\GuzzleException $e) {
+            
+            throw new InvalidRequestException('InvalidRequestException');
+
+        }
+
+
+
+
+        return $this->parseResponse($response);
+	}
+
+
+	private function parseResponse($response)
+	{
+
+
         // Body responsed.
         $body = (string) $response->getBody();
 
-        // Decode json content.
-        if ($response->getContentType() == 'application/json' OR ($response->getContentType() == 'application/json;charset=UTF-8'))
+        if (($response->getStatusCode() == 200) AND (strpos($response->getContentType(), 'application/json') !== FALSE))
         {
+
             if (function_exists('json_decode') and is_string($body))
             {
+                //$body = $this->normaliseKeys(json_decode($body, true));
                 $body = json_decode($body, true);
             }
 
         } else {
 
-        	throw new InvalidGatewayResponseException();
+        	throw new InvalidGatewayResponseException;
 
-        }
-
+        }		
 
         return $body;
-	}
-
-
-
-
-
-	private function postRemote()
-	{
 
 	}
 
 
+	private function normaliseKeys ($obj) {
+		// Determine is working with a class or araay
+		if ($obj instanceof stdClass) {
+			$new_obj = new stdClass();
+			$is_obj = true;
+		} else {
+			$new_obj = array();
+			$is_obj = false;
+		}
 
 
+		foreach($obj as $key => $val){
+			// If we come across another class/array, normalise it
+			if ($val instanceof stdClass || is_array($val)) {
+				$val = $this->normaliseKeys($val);
+			}
+			
+			// Replace any unwanted characters in they key name
+			if ($is_obj) {
+				$new_obj->{str_replace('-', '', $key)} = $val;
+			} else {
+				$new_obj[str_replace('-', '', $key)] = $val;
+			}
+		}
 
-
-
-
-
+		return $new_obj;
+	}
 
 
 }

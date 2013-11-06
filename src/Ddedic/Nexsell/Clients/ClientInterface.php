@@ -22,8 +22,8 @@ interface ClientInterface {
 
 	public function getPlan();
 
-	public function getGateway();
-
 	public function getMessages();
+
+	public function takeCredit($credit);
 
 }

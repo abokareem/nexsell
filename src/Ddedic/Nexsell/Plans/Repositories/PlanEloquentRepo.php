@@ -24,6 +24,10 @@ class PlanEloquentRepo extends Eloquent implements PlanInterface {
 		return $this->hasMany('Ddedic\Nexsell\Plans\Repositories\PlanPricingEloquentRepo', 'plan_id');
 	}
 
+	public function gateway()
+	{
+		return $this->belongsTo('Ddedic\Nexsell\Gateways\Repositories\GatewayEloquentRepo', 'gateway_id');
+	}
 
 
 	public function getAll()
@@ -73,5 +77,10 @@ class PlanEloquentRepo extends Eloquent implements PlanInterface {
 	{
 		return $this->pricing();
 	}
+
+	public function getGateway()
+	{
+		return $this->gateway();
+	}	
 
 }

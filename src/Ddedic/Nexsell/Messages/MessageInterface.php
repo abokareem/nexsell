@@ -21,11 +21,14 @@ interface MessageInterface {
 
     public function getStatus();
 
+    public function getStatusMessage();
+
     public function getGateway();
 
     public function getMessageParts();
 
     public function isDelivered();
+    
     
 
 }

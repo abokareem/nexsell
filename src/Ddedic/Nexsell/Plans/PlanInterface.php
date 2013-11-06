@@ -20,4 +20,6 @@ interface PlanInterface {
 	public function findById($id);
 
 	public function getPricing();
+
+	public function getGateway();
 }

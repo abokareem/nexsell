@@ -21,10 +21,7 @@ class ClientEloquentRepo extends Eloquent implements ClientInterface {
 		return $this->belongsTo('Ddedic\Nexsell\Plans\Repositories\PlanEloquentRepo', 'plan_id');
 	}
 
-	public function gateway()
-	{
-		return $this->belongsTo('Ddedic\Nexsell\Gateways\Repositories\GatewayEloquentRepo', 'gateway_id');
-	}
+
 
 	public function messages()
 	{
@@ -79,15 +76,36 @@ class ClientEloquentRepo extends Eloquent implements ClientInterface {
 		return $this->plan();
 	}
 
-	public function getGateway()
-	{
-		return $this->gateway();
-	}
-
 	public function getMessages()
 	{
 		return $this->messages();
 	}
+
+	public function takeCredit($credit)
+	{
+		if ($credit !== 0 OR $credit !=='')
+			$this->credit_balance = (float) $this->credit_balance - (float) $credit;
+			$this->save();
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

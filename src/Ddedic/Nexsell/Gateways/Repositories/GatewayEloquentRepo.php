@@ -16,9 +16,9 @@ class GatewayEloquentRepo extends Eloquent implements GatewayInterface {
 
 
 
-	public function clients()
+	public function plans()
 	{
-		return $this->hasMany('Ddedic\Nexsell\Clients\Repositories\ClientEloquentRepo', 'gateway_id');
+		return $this->hasMany('Ddedic\Nexsell\Plans\Repositories\PlanEloquentRepo', 'gateway_id');
 	}
 
 	public function message()
@@ -47,6 +47,15 @@ class GatewayEloquentRepo extends Eloquent implements GatewayInterface {
 		return $this->find($id);
 	}
 
+	public function getId()
+	{
+		return $this->id;
+	}
+
+	public function getClassName()
+	{
+		return $this->class_name;
+	}	
 
 	public function getApiKey()
 	{
@@ -58,9 +67,9 @@ class GatewayEloquentRepo extends Eloquent implements GatewayInterface {
 		return $this->api_secret;
 	}	
 
-	public function getClients()
+	public function getPlans()
 	{
-		return $this->clients()->all();
+		return $this->plans()->all();
 	}
 
 

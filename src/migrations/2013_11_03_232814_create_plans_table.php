@@ -11,6 +11,7 @@ class CreatePlansTable extends Migration {
 			$table->increments('id');
 			$table->string('name', 255);
 			$table->text('description')->nullable();
+			$table->mediumInteger('gateway_id')->unsigned()->index();
 			$table->enum('strict', array('0', '1'));
 			$table->float('price_adjustment', 8,5)->default('25');
 			$table->timestamps();

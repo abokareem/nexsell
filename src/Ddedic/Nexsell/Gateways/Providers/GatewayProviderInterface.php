@@ -1,9 +1,11 @@
 <?php namespace Ddedic\Nexsell\Gateways\Providers;
 
+use Ddedic\Nexsell\Messages\MessageInterface;
+
 
 interface GatewayProviderInterface {
 
-	public function sendMessage($from, $to, $text);
+	public function sendMessage(MessageInterface $message);
 
 	public function getMessages();
 

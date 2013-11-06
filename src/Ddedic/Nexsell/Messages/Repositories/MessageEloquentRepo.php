@@ -68,7 +68,12 @@ class MessageEloquentRepo extends Eloquent implements MessageInterface {
     public function getStatus()
     {
         return $this->status;
-    }     
+    }
+
+    public function getStatusMessage()
+    {
+        return $this->status_msg;
+    }
 
     public function getGateway()
     {

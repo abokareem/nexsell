@@ -15,6 +15,8 @@ use Ddedic\Nexsell\Exceptions\InvalidGatewayProviderException;
 use Ddedic\Nexsell\Exceptions\InactiveGatewayProviderException;
 use Ddedic\Nexsell\Exceptions\UnsupportedDestinationException;
 use Ddedic\Nexsell\Exceptions\InvalidRequestException;
+use Ddedic\Nexsell\Exceptions\InsufficientCreditsException;
+use Ddedic\Nexsell\Exceptions\MessageFailedException;
 
 use App, Response, Numtector;
 use Guzzle\Http\Client;
@@ -52,75 +54,8 @@ class Nexsell {
 
 	public static function hello()
 	{
-		echo 'Nexell says hello!';
+		echo 'Nexsell says hello!';
 	}
-
-
-
-	public function testClient()
-	{
-
-        $remoteClient = new Client('https://rest.nexmo.com');
-
-        // Parameters for GET, POST
-        //$parameters = ($parameters) ? current($parameters) : array();
-
-
-        $method = 'get';
-        $uri = 'account/get-pricing/outbound';
-        $parameters = array('api_key' => '6d3970a2', 'api_secret' => '4424dd3d', 'country' => 'BA');
-
-        // Make request.
-        // $request = $remoteClient->get($uri, array(), $parameters);
-		$request = $remoteClient->get($uri, array(), array(
-					    'query' => $parameters
-					));
-
-
-        // Send request.
-        
-       // try {
-            
-			
-
-
-            $response = $request->send();    
-
-       /* } catch (\Guzzle\Common\Exception\GuzzleException $e) {
-            
-            //dd($e->getResponse()->getReasonPhrase());
-            $response = array(
-                'status'     => 'error',
-                'code'       => $e->getResponse()->getStatusCode(),
-                'message'    => $e->getResponse()->getReasonPhrase()
-            );
-
-            return Response::json($response);            
-        }
-	*/
-
-
-
-        // Body responsed.
-        $body = (string) $response->getBody();
-
-
-        // Decode json content.
-        if ($response->getContentType() == 'application/json' OR ($response->getContentType() == 'application/json;charset=UTF-8'))
-        {
-            if (function_exists('json_decode') and is_string($body))
-            {
-                $body = json_decode($body, true);
-            }
-        }
-
-
-        return $body;
-
-
-	}
-
-
 
 
 	// ------------------------
@@ -137,118 +72,6 @@ class Nexsell {
 		}
 		
 		return false;
-	}
-
-
-
-	public function sendMessage(ClientInterface $client, $from, $to, $text)
-	{
-
-
-		// Params Validation
-
-		if($from === NULL OR $to === NULL OR $text === NULL)
-			throw new RequiredFieldsException;
-		
-		$paramFrom = $this->validateOriginatorFormat($from);
-		$paramTo = $this->validateDestinationFormat($to);
-		$paramText = iconv(mb_detect_encoding($text, mb_detect_order(), true), "UTF-8", $text);
-
-
-		if($paramFrom == '')
-			throw new InvalidFromFieldException;
-
-		if($paramTo == '')
-			throw new InvalidToFieldException;
-
-
-
-		// process destination number
-		if(! $destination = Numtector::processNumber($paramTo))
-			throw new InvalidDestinationException;
- 
-
-
-		$gatewayProvider 	=  $this->_setupGatewayProvider($client);
-		$pricePerMessage 	=  $this->_getPricePerMessage($client, $gatewayProvider, $destination);
-
-
-
-
-	
-		dd ($pricePerMessage);
-
-
-	}
-
-
-
-	private function _setupGatewayProvider(ClientInterface $client)
-	{
-
- 		// Gateway init
- 		$gatewayClass = $this->gatewayProvidersPath . $client->getGateway->class_name;
-
- 		if(!class_exists($gatewayClass)){
- 			throw new InvalidGatewayProviderException;
- 		}
-
- 		if ($client->getGateway->active == 0 OR $client->getGateway->active == '0')
- 		{
- 			throw new InactiveGatewayProviderException;
- 		}
-
-		return new $gatewayClass ($client->getGateway->api_key, $client->getGateway->api_secret);
-
-
-
-
-	}
-
-
-	private function _getPricePerMessage(ClientInterface $client, GatewayProviderInterface $gateway, array $destination)
-	{
-		//dd($client->plan->gePlanId());
-		// Plan pricing
-		if (! $pricePerMessage = $this->plan_pricings->getMessagePrice($client->getPlan->id, $destination))
-		{
-			// attempt to get pricing directly from gateway
-
-				// get api pricing
-				if($gatewayPrice = $gateway->getDestinationPricing($destination))
-				{
-
-					if (! $client->plan->isStrict())
-					{
-
-						
-						$planPricing = new $this->plan_pricings();
-
-						$planPricing->country_code = $destination['country']['iso'];
-						$planPricing->network_code = $destination['network']['network_code'];
-						$planPricing->price_original = $gatewayPrice;
-						$planPricing->price_adjustment_type = 'percentage';
-						$planPricing->price_adjustment_value = $client->plan->getPriceAdjustmentValue();
-
-						$client->plan->pricing()->save($planPricing);
-						
-						
-						return $pricePerMessage = $this->plan_pricings->getMessagePrice($client->getPlan->id, $destination);
-
-					}
-
-
-				} else {
-
-					throw new UnsupportedDestinationException;
-				}
-
-		} else {
-			
-			// found message price, attempt to send message
-			return $pricePerMessage;
-
-		}		
 	}
 
 
@@ -297,5 +120,199 @@ class Nexsell {
             
             return (string)$ret;
     }
+
+
+
+
+
+	public function sendMessage(ClientInterface $client, $from, $to, $text)
+	{
+
+
+		// Params Validation
+
+		if($from === NULL OR $to === NULL OR $text === NULL)
+			throw new RequiredFieldsException;
+		
+		$paramFrom = $this->validateOriginatorFormat($from);
+		$paramTo = $this->validateDestinationFormat($to);
+		$paramText = iconv(mb_detect_encoding($text, mb_detect_order(), true), "UTF-8", $text);
+
+
+		if($paramFrom == '')
+			throw new InvalidFromFieldException;
+
+		if($paramTo == '')
+			throw new InvalidToFieldException;
+
+
+
+		// process destination number
+		if(! $destination = Numtector::processNumber($paramTo))
+			throw new InvalidDestinationException;
+ 
+
+		$gatewayProvider 	=  $this->_setupGatewayProvider($client);
+
+
+		if ($pricePerMessage 	=  $this->_getPricePerMessage($client, $gatewayProvider, $destination))
+		{
+
+			$numberOfMessages = ceil(strlen($paramText)/160);
+			$neededCredit = (float) $numberOfMessages * (float) $pricePerMessage;
+
+			if($client->getCreditBalance() >= $neededCredit)
+			{
+
+				$message = new $this->messages();
+
+				$message->gateway_id = $client->plan->gateway->getId();
+				$message->country_code = $destination['country']['iso'];
+				$message->from = $paramFrom;
+				$message->to = $paramTo;
+				$message->text = $paramText;
+				$message->price = $neededCredit;
+				$message->status = 'pending';
+
+				$message = $client->messages()->save($message);
+
+
+				if ($messageSent = $this->_sendMessage($gatewayProvider, $message))
+				{
+
+					// all validations passed, take client's credit, return message sent = true
+
+					$client->takeCredit($neededCredit);
+					return TRUE;
+
+
+
+				} else {
+
+					throw new MessageFailedException($message->getStatusMessage());
+				}
+
+
+			} else {
+				throw new InsufficientCreditsException;
+			}
+
+		} else {
+			throw new UnsupportedDestinationException;
+		}	
+
+
+	}
+
+
+
+	private function _setupGatewayProvider(ClientInterface $client)
+	{
+
+
+ 		// Gateway init
+ 		$gatewayClass = $this->gatewayProvidersPath . $client->plan->gateway->getClassName();
+
+ 		if(!class_exists($gatewayClass)){
+ 			throw new InvalidGatewayProviderException;
+ 		}
+
+ 		if ($client->plan->gateway->isActive() == 0 OR $client->plan->gateway->isActive() == '0')
+ 		{
+ 			throw new InactiveGatewayProviderException;
+ 		}
+
+
+
+		return new $gatewayClass ($client->plan->gateway->getApiKey(), $client->plan->gateway->getApiSecret());
+
+	}
+
+
+	private function _getPricePerMessage(ClientInterface $client, GatewayProviderInterface $gateway, array $destination)
+	{
+		//dd($client->plan->gePlanId());
+		// Plan pricing
+		if (! $pricePerMessage = $this->plan_pricings->getMessagePrice($client->getPlan->id, $destination))
+		{
+			// attempt to get pricing directly from gateway
+
+				// get api pricing
+				if($gatewayPrice = $gateway->getDestinationPricing($destination))
+				{
+
+					if (! $client->plan->isStrict())
+					{
+
+						
+						$planPricing = new $this->plan_pricings();
+
+						$planPricing->country_code = $destination['country']['iso'];
+						$planPricing->network_code = $destination['network']['network_code'];
+						$planPricing->price_original = $gatewayPrice;
+						$planPricing->price_adjustment_type = 'percentage';
+						$planPricing->price_adjustment_value = $client->plan->getPriceAdjustmentValue();
+
+						$client->plan->pricing()->save($planPricing);
+						
+						return $pricePerMessage = $this->plan_pricings->getMessagePrice($client->getPlan->id, $destination);
+
+					}
+
+
+				} else {
+
+					throw new UnsupportedDestinationException;
+				}
+
+		} else {
+			
+			// found message price
+			return $pricePerMessage;
+
+		}		
+	}
+
+
+	private function _sendMessage(GatewayProviderInterface $gateway, MessageInterface $message)
+	{
+		$messageSent = false;
+
+		if ($messageParts = $gateway->sendMessage($message))
+		{
+
+			if ($messageParts['status'] == 'success'){
+
+				foreach ($messageParts['message_parts'] as $message_part)
+				{
+					$message->message_parts()->create($message_part);
+				}
+
+				$message->status = 'sent';
+				$message->save();
+				$messageSent = true;
+
+			} else {
+
+				$message->status = 'failed';
+				$message->status_msg = $messageParts['status_msg'];
+				$message->save();
+
+			}
+
+		}
+
+
+		return $messageSent;
+		
+	}
+
+
+
+	public function getClientBalance(ClientInterface $client)
+	{
+		return $client->getCreditBalance();
+	}
+
 
 }

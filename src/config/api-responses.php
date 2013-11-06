@@ -4,6 +4,9 @@ return array(
 
     'statuses' => array(
 
+        // Nexsell success responses
+        20 => 'Message succesfully sent',
+
         // Nexsell error responses
         40 => 'Unknown error',
         41 => 'Missing required fields',
@@ -15,6 +18,8 @@ return array(
         47 => 'Inactive gateway provider',
         48 => 'Invalid request from the server',
         49 => 'Unsupported destination',
+        50 => 'Insufficient credits',
+        51 => 'Message failed',
 
 
         //Informational 1xx

@@ -15,9 +15,9 @@ class CreateMessagesTable extends Migration {
 			$table->string('from', 128);
 			$table->string('to', 900);
 			$table->string('text', 800)->nullable();
-			$table->float('price_original', 8,5);
 			$table->float('price', 8,5);
-			$table->enum('status', array('queued', 'sent', 'failed'));
+			$table->enum('status', array('pending','queued', 'sent', 'failed'));
+			$table->string('status_msg', 255)->nullable();
 			$table->timestamps();
 		});
 	}

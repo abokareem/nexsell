@@ -9,16 +9,13 @@ use Input, Request, Response;
 class MessageController extends BaseApiController {
 
 
-	protected $client;
-	protected $message;
-	protected $gateway;
+	
+
 
 
 	public function __construct()
 	{
 		parent::__construct();
-
-		$this->_init_startup();
 
 	}
 
@@ -47,19 +44,7 @@ class MessageController extends BaseApiController {
 	// ----------------------------------------------
 
 
-	private function _init_startup()
-	{
 
-		$apiKey = Input::get('api_key');
-		$apiSecret = Input::get('api_secret');
-
-
-		if ($client = Nexsell::authApi($apiKey, $apiSecret))
-			$this->client = $client;
-		else
-			return API::createResponse(null, 401);
-
-	}
 
 	public function postClient()
 	{
@@ -156,16 +141,6 @@ class MessageController extends BaseApiController {
 
 
 
-	public function postNexmo()
-	{
-
-		return Nexsell::testClient();
-
-	}
-
-
-
-
 
 
 
@@ -180,7 +155,10 @@ class MessageController extends BaseApiController {
 			$to = Input::get('to');
 			$text = Input::get('text');
 
-			return Nexsell::sendMessage($this->client, $from, $to, $text);
+			if (Nexsell::sendMessage($this->client, $from, $to, $text))
+			{
+				return API::createResponse('Message succesfully sent', 20);
+			}
 
 			
 		}
@@ -232,6 +210,19 @@ class MessageController extends BaseApiController {
 			return API::createResponse(null, 49);
 			
 		}
+
+		catch (\Ddedic\Nexsell\Exceptions\InsufficientCreditsException $e) {
+
+			return API::createResponse(null, 50);
+			
+		}
+
+		catch (\Ddedic\Nexsell\Exceptions\MessageFailedException $e) {
+
+			return API::createResponse($e->getMessage(), 51);
+			
+		}		
+
 
 
 	}

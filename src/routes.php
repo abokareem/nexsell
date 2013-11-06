@@ -13,7 +13,7 @@ Route::group(Config::get('nexsell::routes.api_group_routes'), function() use ($a
 {
 
 	Route::controller('message', $apiControllers . 'MessageController');
-	//Route::controller('account', $apiControllers . 'AccountController');
+	Route::controller('account', $apiControllers . 'AccountController');
 
 });
 
