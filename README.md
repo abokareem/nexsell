@@ -1,4 +1,4 @@
 NexSell
 =======
 
-Nexmo Reseller v0.1
+Nexmo Reseller without Backend
