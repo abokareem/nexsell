@@ -5,14 +5,13 @@ interface ClientInterface {
 
 	public function getAll();
 
-
-
-
 	public function isActive();
 
 	public function findByApiCredentials($api_key, $api_secret);
 
 	public function findById($id);
+
+	public function getId();
 
 	public function getApiKey();
 

@@ -33,6 +33,12 @@ class NexsellServiceProvider extends ServiceProvider {
 		// API
 		$loader->alias('API', 'Ddedic\Nexsell\Facades\ApiFacade');
 
+		// Theme
+		$loader->alias('Theme', 'Teepluss\Theme\Facades\Theme');
+
+		// Alerts
+		$loader->alias('Alert', 'Prologue\Alerts\Facades\Alert');
+
 
 
 		$this->bootCommands();
@@ -59,6 +65,11 @@ class NexsellServiceProvider extends ServiceProvider {
 		// Numtector
         $this->app->register('Ddedic\\Numtector\\NumtectorServiceProvider');
 
+        // Theme
+        $this->app->register('Teepluss\\Theme\\ThemeServiceProvider');
+
+        // Alerts
+        $this->app->register('Prologue\\Alerts\\AlertsServiceProvider');
 
         // Api
 		$this->app['api'] = $this->app->share(function($app)
@@ -69,11 +80,12 @@ class NexsellServiceProvider extends ServiceProvider {
 
 
 
-		$this->app->singleton('Clients\ClientInterface', 'Clients\Repositories\ClientEloquentRepo');
-		$this->app->singleton('Messages\MessageInterface', 'Messages\Repositories\MessageEloquentRepo');
-		$this->app->singleton('Gateways\GatewayInterface', 'Gateways\Repositories\GatewayEloquentRepo');
-		$this->app->singleton('Plans\PlanInterface', 'Plans\Repositories\PlanEloquentRepo');
-		$this->app->singleton('Plans\PlanPricingInterface', 'Plans\Repositories\PlanPricingEloquentRepo');
+
+		$this->app->singleton('Ddedic\Nexsell\Clients\ClientInterface', 'Ddedic\Nexsell\Clients\Repositories\ClientEloquentRepo');
+		$this->app->singleton('Ddedic\Nexsell\Messages\MessageInterface', 'Ddedic\Nexsell\Messages\Repositories\MessageEloquentRepo');
+		$this->app->singleton('Ddedic\Nexsell\Gateways\GatewayInterface', 'Ddedic\Nexsell\Gateways\Repositories\GatewayEloquentRepo');
+		$this->app->singleton('Ddedic\Nexsell\Plans\PlanInterface', 'Ddedic\Nexsell\Plans\Repositories\PlanEloquentRepo');
+		$this->app->singleton('Ddedic\Nexsell\Plans\PlanPricingInterface', 'Ddedic\Nexsell\Plans\Repositories\PlanPricingEloquentRepo');
 
 
 
@@ -125,7 +137,7 @@ class NexsellServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array('nexsell', 'nexsell.api');
+		return array('nexsell');
 	}
 
 }

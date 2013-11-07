@@ -4,14 +4,13 @@ return array(
 
     /*
     |--------------------------------------------------------------------------
-    | API header response.
+    | Backend theme
     |--------------------------------------------------------------------------
     |
-    | Default API will always return "200", but you can set the right header
-    | returned by change "true".
+    | Default Backend theme
     |
     */
 
-    'httpResponse' => true
+    'backendTheme' => 'backend'
 
 );

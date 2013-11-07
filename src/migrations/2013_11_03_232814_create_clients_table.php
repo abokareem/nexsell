@@ -14,8 +14,8 @@ class CreateClientsTable extends Migration {
 			$table->smallInteger('minute_limit')->default('30');
 			$table->smallInteger('hour_limit')->default('1000');
 			$table->smallInteger('plan_id')->index()->default('1');
-			$table->float('credit_balance', 8,5);
-			$table->smallInteger('active');
+			$table->float('credit_balance', 8,5)->default('0');
+			$table->smallInteger('active')->default('0');
 			$table->timestamps();
 		});
 	}

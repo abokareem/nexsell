@@ -1,6 +1,6 @@
 <?php namespace Ddedic\Nexsell\Controllers\Api;
 
-use Api, Input, Controller, Request, Response, Nexsell; 
+use Input, Controller, Request, Response, Nexsell, API; 
 
 class BaseApiController extends Controller {
 

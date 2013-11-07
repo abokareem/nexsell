@@ -1,19 +1,27 @@
 <?php namespace Ddedic\Nexsell\Clients\Repositories;
 
-use Illuminate\Database\Eloquent\Model as Eloquent;
+use LaravelBook\Ardent\Ardent;
 use Ddedic\Nexsell\Clients\ClientInterface;
 
 
 
-class ClientEloquentRepo extends Eloquent implements ClientInterface {
+class ClientEloquentRepo extends Ardent implements ClientInterface {
 
 	protected $table = 'clients';
 
 	public $timestamps = true;
-	protected $guarded = array('api_key', 'api_secret', 'credit_balance');
+	protected $guarded = array();
 	protected $hidden = array('created_at', 'updated_at');
 
-
+	public static $rules = array(
+	    'api_key' => 'required|min:4',
+	    'api_secret' => 'required|min:4',
+	    'plan_id' => 'required|numeric',
+	    'minute_limit' => 'required|numeric|between:1,60',
+	    'hour_limit' => 'required|numeric|between:60,1000',
+	    'credit_balance' => 'required|numeric',
+	    'active' => 'required|numeric'
+	);
 
 
 	public function plan()
@@ -35,7 +43,7 @@ class ClientEloquentRepo extends Eloquent implements ClientInterface {
 
 	public function getAll()
 	{
-		return $this->all();
+		return $this->paginate();
 	}
 
 
@@ -55,6 +63,10 @@ class ClientEloquentRepo extends Eloquent implements ClientInterface {
 		return $this->find($id);
 	}
 
+	public function getId()
+	{
+		return $this->id;
+	}
 
 	public function getApiKey()
 	{
