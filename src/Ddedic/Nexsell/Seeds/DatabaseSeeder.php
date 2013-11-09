@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder {
     public function run() {
         Eloquent::unguard();
 
-        $this->call('Ddedic\Nexsell\Seeds\ClientsSeeder');
+        $this->call('Ddedic\Nexsell\Seeds\ApisSeeder');
         $this->call('Ddedic\Nexsell\Seeds\PlansSeeder');
         $this->call('Ddedic\Nexsell\Seeds\GatewaysSeeder');
     }

@@ -14,9 +14,9 @@ class PlanEloquentRepo extends Eloquent implements PlanInterface {
 
 
 
-	public function clients()
+	public function apis()
 	{
-		return $this->hasMany('Ddedic\Nexsell\Clients\Repositories\ClientEloquentRepo', 'plan_id');
+		return $this->hasMany('Ddedic\Nexsell\Apis\Repositories\ApiEloquentRepo', 'api_id');
 	}
 
 	public function pricing()

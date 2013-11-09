@@ -1,7 +1,7 @@
-<?php namespace Ddedic\Nexsell\Clients;
+<?php namespace Ddedic\Nexsell\Apis;
 
 
-interface ClientInterface {
+interface ApiInterface {
 
 	public function getAll();
 

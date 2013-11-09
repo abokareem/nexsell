@@ -1,13 +1,13 @@
-<?php namespace Ddedic\Nexsell\Clients\Repositories;
+<?php namespace Ddedic\Nexsell\Apis\Repositories;
 
 use LaravelBook\Ardent\Ardent;
-use Ddedic\Nexsell\Clients\ClientInterface;
+use Ddedic\Nexsell\Apis\ApiInterface;
 
 
 
-class ClientEloquentRepo extends Ardent implements ClientInterface {
+class ApiEloquentRepo extends Ardent implements ApiInterface {
 
-	protected $table = 'clients';
+	protected $table = 'apis';
 
 	public $timestamps = true;
 	protected $guarded = array();
@@ -33,7 +33,7 @@ class ClientEloquentRepo extends Ardent implements ClientInterface {
 
 	public function messages()
 	{
-		return $this->hasMany('Ddedic\Nexsell\Messages\Repositories\MessageEloquentRepo', 'client_id');
+		return $this->hasMany('Ddedic\Nexsell\Messages\Repositories\MessageEloquentRepo', 'api_id');
 	}
 
 

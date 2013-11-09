@@ -10,12 +10,12 @@ class MessageEloquentRepo extends Eloquent implements MessageInterface {
 
     public $timestamps = true;
     protected $guarded = array();
-    protected $hidden = array('created_at', 'updated_at', 'client_id', 'gateway_id');
+    protected $hidden = array('created_at', 'updated_at', 'api_id', 'gateway_id');
 
 
-    public function client()
+    public function api()
     {
-        return $this->belongsTo('Ddedic\Nexsell\Clients\Repositories\ClientEloquentRepo', 'id');
+        return $this->belongsTo('Ddedic\Nexsell\Apis\Repositories\ApiEloquentRepo', 'id');
     }
 
     public function gateway()
