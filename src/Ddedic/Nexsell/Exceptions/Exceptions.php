@@ -15,6 +15,9 @@ class InvalidGatewayProviderException extends GatewayException {}
 class InactiveGatewayProviderException extends GatewayException {}
 class InvalidGatewayResponseException extends GatewayException {}
 
+class PlanException extends \RuntimeException {}
+class UnsupportedDestinationException extends PlanException {}
+
 class InsufficientCreditsException extends \RuntimeException {}
 class MessageFailedException extends \RuntimeException {}
 
