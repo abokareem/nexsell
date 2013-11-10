@@ -41,7 +41,7 @@ class InstallCommand extends Command {
 		$this->comment('Installing Nexsell...');
 
 		// Migrations
-		$this->call('migrate');
+		//$this->call('migrate');
 		//$this->call('migrate', array('--package' => 'ddedic/nexsell'));
 		$this->call('migrate', array('--package' => 'ddedic/nexsell'));
 		$this->call('migrate', array('--package' => 'ddedic/numtector'));
