@@ -1,7 +1,7 @@
 <?php namespace Ddedic\Nexsell;
 
 use Illuminate\Config\Repository;
-use Ddedic\Nexsell\Clients\ClientInterface;
+use Ddedic\Nexsell\Apis\ApiInterface;
 use Ddedic\Nexsell\Messages\MessageInterface;
 use Ddedic\Nexsell\Gateways\GatewayInterface;
 use Ddedic\Nexsell\Gateways\Providers\GatewayProviderInterface;
@@ -28,7 +28,7 @@ class Nexsell {
 
 	protected $config;
 
-	protected $clients;
+	protected $apis;
 	protected $messages;
 	protected $gateways;
 	protected $plans;
@@ -37,11 +37,11 @@ class Nexsell {
 	protected $gatewayProvidersPath;
 
 
-	public function __construct(Repository $config, ClientInterface $clients, MessageInterface $messages, GatewayInterface $gateways, PlanInterface $plans, PlanPricingInterface $pricings)
+	public function __construct(Repository $config, ApiInterface $apis, MessageInterface $messages, GatewayInterface $gateways, PlanInterface $plans, PlanPricingInterface $pricings)
 	{
 		$this->config = $config;
 
-		$this->clients = $clients;
+		$this->apis = $apis;
 		$this->messages = $messages;
 		$this->gateways = $gateways;
 		$this->plans = $plans;
@@ -64,11 +64,11 @@ class Nexsell {
 
 	public function authApi($api_key, $api_secret)
 	{
-		$client = $this->clients->findByApiCredentials($api_key, $api_secret);
+		$api = $this->apis->findByApiCredentials($api_key, $api_secret);
 
-		if ( $client !== NULL)
+		if ( $api !== NULL)
 		{
-			if ($client->isActive()) return $client;	
+			if ($api->isActive()) return $api;	
 		}
 		
 		return false;
@@ -125,7 +125,7 @@ class Nexsell {
 
 
 
-	public function sendMessage(ClientInterface $client, $from, $to, $text)
+	public function sendMessage(ApiInterface $api, $from, $to, $text)
 	{
 
 
@@ -152,21 +152,21 @@ class Nexsell {
 			throw new InvalidDestinationException;
  
 
-		$gatewayProvider 	=  $this->_setupGatewayProvider($client);
+		$gatewayProvider 	=  $this->_setupGatewayProvider($api);
 
 
-		if ($pricePerMessage 	=  $this->_getPricePerMessage($client, $gatewayProvider, $destination))
+		if ($pricePerMessage 	=  $this->_getPricePerMessage($api, $gatewayProvider, $destination))
 		{
 
 			$numberOfMessages = ceil(strlen($paramText)/160);
 			$neededCredit = (float) $numberOfMessages * (float) $pricePerMessage;
 
-			if($client->getCreditBalance() >= $neededCredit)
+			if($api->getCreditBalance() >= $neededCredit)
 			{
 
 				$message = new $this->messages();
 
-				$message->gateway_id = $client->plan->gateway->getId();
+				$message->gateway_id = $api->plan->gateway->getId();
 				$message->country_code = $destination['country']['iso'];
 				$message->from = $paramFrom;
 				$message->to = $paramTo;
@@ -174,15 +174,15 @@ class Nexsell {
 				$message->price = $neededCredit;
 				$message->status = 'pending';
 
-				$message = $client->messages()->save($message);
+				$message = $api->messages()->save($message);
 
 
 				if ($messageSent = $this->_sendMessage($gatewayProvider, $message))
 				{
 
-					// all validations passed, take client's credit, return message sent = true
+					// all validations passed, take api's credit, return message sent = true
 
-					$client->takeCredit($neededCredit);
+					$api->takeCredit($neededCredit);
 					return TRUE;
 
 
@@ -206,34 +206,34 @@ class Nexsell {
 
 
 
-	private function _setupGatewayProvider(ClientInterface $client)
+	private function _setupGatewayProvider(ApiInterface $api)
 	{
 
 
  		// Gateway init
- 		$gatewayClass = $this->gatewayProvidersPath . $client->plan->gateway->getClassName();
+ 		$gatewayClass = $this->gatewayProvidersPath . $api->plan->gateway->getClassName();
 
  		if(!class_exists($gatewayClass)){
  			throw new InvalidGatewayProviderException;
  		}
 
- 		if ($client->plan->gateway->isActive() == 0 OR $client->plan->gateway->isActive() == '0')
+ 		if ($api->plan->gateway->isActive() == 0 OR $api->plan->gateway->isActive() == '0')
  		{
  			throw new InactiveGatewayProviderException;
  		}
 
 
 
-		return new $gatewayClass ($client->plan->gateway->getApiKey(), $client->plan->gateway->getApiSecret());
+		return new $gatewayClass ($api->plan->gateway->getApiKey(), $api->plan->gateway->getApiSecret());
 
 	}
 
 
-	private function _getPricePerMessage(ClientInterface $client, GatewayProviderInterface $gateway, array $destination)
+	private function _getPricePerMessage(ApiInterface $api, GatewayProviderInterface $gateway, array $destination)
 	{
-		//dd($client->plan->gePlanId());
+		//dd($api->plan->gePlanId());
 		// Plan pricing
-		if (! $pricePerMessage = $this->plan_pricings->getMessagePrice($client->getPlan->id, $destination))
+		if (! $pricePerMessage = $this->plan_pricings->getMessagePrice($api->getPlan->id, $destination))
 		{
 			// attempt to get pricing directly from gateway
 
@@ -241,7 +241,7 @@ class Nexsell {
 				if($gatewayPrice = $gateway->getDestinationPricing($destination))
 				{
 
-					if (! $client->plan->isStrict())
+					if (! $api->plan->isStrict())
 					{
 
 						
@@ -251,11 +251,11 @@ class Nexsell {
 						$planPricing->network_code = $destination['network']['network_code'];
 						$planPricing->price_original = $gatewayPrice;
 						$planPricing->price_adjustment_type = 'percentage';
-						$planPricing->price_adjustment_value = $client->plan->getPriceAdjustmentValue();
+						$planPricing->price_adjustment_value = $api->plan->getPriceAdjustmentValue();
 
-						$client->plan->pricing()->save($planPricing);
+						$api->plan->pricing()->save($planPricing);
 						
-						return $pricePerMessage = $this->plan_pricings->getMessagePrice($client->getPlan->id, $destination);
+						return $pricePerMessage = $this->plan_pricings->getMessagePrice($api->getPlan->id, $destination);
 
 					}
 
@@ -309,9 +309,9 @@ class Nexsell {
 
 
 
-	public function getClientBalance(ClientInterface $client)
+	public function getApiBalance(ApiInterface $api)
 	{
-		return $client->getCreditBalance();
+		return $api->getCreditBalance();
 	}
 
 

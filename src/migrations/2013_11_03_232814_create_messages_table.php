@@ -9,7 +9,7 @@ class CreateMessagesTable extends Migration {
 	{
 		Schema::create('messages', function(Blueprint $table) {
 			$table->increments('id');
-			$table->integer('client_id')->unsigned()->index();
+			$table->integer('api_id')->unsigned()->index();
 			$table->integer('gateway_id')->unsigned()->index();
 			$table->string('country_code', 3)->index();
 			$table->string('from', 128);

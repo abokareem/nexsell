@@ -19,6 +19,7 @@ class PlansSeeder extends Seeder {
                 'description'       => 'Default plan with strict 25% price adjustment',
                 'price_adjustment'  => '25',
                 'strict'            => '1',
+                'gateway_id'        => 1,
                 'created_at'        => date('Y-m-d H:i:s'),
                 'updated_at'        => date('Y-m-d H:i:s')
             ),
@@ -28,6 +29,7 @@ class PlansSeeder extends Seeder {
                 'description'       => 'Default plan with strict 10% price adjustment',
                 'price_adjustment'  => '10',
                 'strict'            => '1',
+                'gateway_id'        => 2,
                 'created_at'        => date('Y-m-d H:i:s'),
                 'updated_at'        => date('Y-m-d H:i:s')
             )

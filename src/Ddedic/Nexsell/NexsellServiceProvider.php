@@ -33,24 +33,8 @@ class NexsellServiceProvider extends ServiceProvider {
 		// API
 		$loader->alias('API', 'Ddedic\Nexsell\Facades\ApiFacade');
 
-		// Theme
-		$loader->alias('Theme', 'Teepluss\Theme\Facades\Theme');
-
-		// Alerts
-		$loader->alias('Alert', 'Prologue\Alerts\Facades\Alert');
-
-
 
 		$this->bootCommands();
-
-
-
-
-        // Inclusions
-        require __DIR__.'/../../filters.php';
-        require __DIR__.'/../../routes.php';
-		
-
 	}
 
 	/**
@@ -64,13 +48,7 @@ class NexsellServiceProvider extends ServiceProvider {
 
 		// Numtector
         $this->app->register('Ddedic\\Numtector\\NumtectorServiceProvider');
-
-        // Theme
-        $this->app->register('Teepluss\\Theme\\ThemeServiceProvider');
-
-        // Alerts
-        $this->app->register('Prologue\\Alerts\\AlertsServiceProvider');
-
+        
         // Api
 		$this->app['api'] = $this->app->share(function($app)
 		{
@@ -81,7 +59,7 @@ class NexsellServiceProvider extends ServiceProvider {
 
 
 
-		$this->app->singleton('Ddedic\Nexsell\Clients\ClientInterface', 'Ddedic\Nexsell\Clients\Repositories\ClientEloquentRepo');
+		$this->app->singleton('Ddedic\Nexsell\Apis\ApiInterface', 'Ddedic\Nexsell\Apis\Repositories\ApiEloquentRepo');
 		$this->app->singleton('Ddedic\Nexsell\Messages\MessageInterface', 'Ddedic\Nexsell\Messages\Repositories\MessageEloquentRepo');
 		$this->app->singleton('Ddedic\Nexsell\Gateways\GatewayInterface', 'Ddedic\Nexsell\Gateways\Repositories\GatewayEloquentRepo');
 		$this->app->singleton('Ddedic\Nexsell\Plans\PlanInterface', 'Ddedic\Nexsell\Plans\Repositories\PlanEloquentRepo');
@@ -92,7 +70,7 @@ class NexsellServiceProvider extends ServiceProvider {
 		$this->app->bind('nexsell', function($app)
 		{
 			return new Nexsell($app['config'],
-								 new Clients\Repositories\ClientEloquentRepo,
+								 new Apis\Repositories\ApiEloquentRepo,
 								 new Messages\Repositories\MessageEloquentRepo,
 								 new Gateways\Repositories\GatewayEloquentRepo,
 								 new Plans\Repositories\PlanEloquentRepo,

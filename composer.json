@@ -12,9 +12,7 @@
         "illuminate/support": "4.2.*",
         "ddedic/numtector": "dev-master",
         "guzzle/guzzle": "3.*",
-        "laravelbook/ardent": "dev-master",
-        "teepluss/theme": "dev-master",
-        "prologue/alerts": "dev-master"
+        "laravelbook/ardent": "dev-master"
     },
     "autoload": {
         "classmap": [

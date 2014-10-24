@@ -4,7 +4,7 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class ClientsSeeder extends Seeder {
+class ApisSeeder extends Seeder {
 
     /**
      * Run the database seeding.
@@ -13,14 +13,13 @@ class ClientsSeeder extends Seeder {
      */
     public function run() {
 
-        $clients = array(
+        $apis = array(
             array(
                 'api_key'           => '12345',
                 'api_secret'        => '54321',
                 'minute_limit'      => '30',
                 'hour_limit'        => '1000',
                 'plan_id'           => 1,
-                'gateway_id'        => 1,
                 'credit_balance'    => 10.00000,
                 'active'            => 1,
                 'created_at'    => date('Y-m-d H:i:s'),
@@ -33,15 +32,14 @@ class ClientsSeeder extends Seeder {
                 'minute_limit'      => '20',
                 'hour_limit'        => '500',
                 'plan_id'           => 1,
-                'gateway_id'        => 1,
                 'credit_balance'    => 0.00000,
                 'active'            => 0,
                 'created_at'    => date('Y-m-d H:i:s'),
                 'updated_at'    => date('Y-m-d H:i:s')
             )
         );
-        DB::table('clients')->insert($clients);
-        $this->command->info('Clients Table Seeded');
+        DB::table('apis')->insert($apis);
+        $this->command->info('Apis Table Seeded');
 
 
 

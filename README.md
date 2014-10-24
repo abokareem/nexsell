@@ -1,4 +1,5 @@
-NexSell
+NexSell v0.5
 =======
 
-Nexmo Reseller without Backend
+Nexmo Reseller package
+(No Backend)
